@@ -285,7 +285,7 @@ export default class SortParagraphsContent {
    * @param {boolean[]} results.correctAnswers True if paragraph/separator at index is correct.
    */
   showScoreExplanation(elements, results) {
-    this.scorePoints = this.scorePoints || new H5P.Question.ScorePoints();
+    this.scorePoints = this.scorePoints || new H5P.QuestionCFRD.ScorePoints();
 
     results.correctAnswers.forEach((answer, index) => {
       const element = elements[index];
@@ -388,9 +388,12 @@ export default class SortParagraphsContent {
      * cope with 'application' instead of 'list', too.
      */
     list.setAttribute('role', 'application');
+    const prefix = this.params.listLabelPrefix ?
+      `${this.params.listLabelPrefix} ` :
+      '';
     list.setAttribute(
       'aria-label',
-      `${this.params.taskDescription} ${this.params.a11y.listDescription}`,
+      `${prefix}${this.params.a11y.listDescription}`,
     );
     list.classList.add('h5p-sort-paragraphs-list');
 
@@ -1030,9 +1033,12 @@ export default class SortParagraphsContent {
    * Reset content.
    */
   reset() {
+    const prefix = this.params.listLabelPrefix ?
+      `${this.params.listLabelPrefix} ` :
+      '';
     this.list.setAttribute(
       'aria-label',
-      `${this.params.taskDescription} ${this.params.a11y.listDescription}`,
+      `${prefix}${this.params.a11y.listDescription}`,
     );
 
     this.answerGiven = false;

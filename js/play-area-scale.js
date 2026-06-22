@@ -1,0 +1,45 @@
+var H5P = H5P || {};
+
+H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
+
+/**
+ * Play area aspect ratio (16:9, fluid width) — same contract as Multi Choice CFRD.
+ */
+H5P.SortParagraphsCFRD.PlayArea = (function () {
+  var BASE_WIDTH = 640;
+  var ASPECT_RATIO = 16 / 9;
+  var BASE_HEIGHT = Math.round(BASE_WIDTH / ASPECT_RATIO);
+  var BASE_FONT_SIZE = 16;
+  var MIN_SCALE = 0.35;
+  var MAX_SCALE = 1;
+
+  function getDesignSize() {
+    return {
+      width: BASE_WIDTH,
+      height: BASE_HEIGHT,
+      ratio: ASPECT_RATIO,
+      baseWidth: BASE_WIDTH,
+      baseHeight: BASE_HEIGHT,
+      baseFontSize: BASE_FONT_SIZE
+    };
+  }
+
+  function getScale(width) {
+    if (!width || width <= 0) {
+      return 1;
+    }
+
+    return Math.max(MIN_SCALE, Math.min(MAX_SCALE, width / BASE_WIDTH));
+  }
+
+  return {
+    BASE_WIDTH: BASE_WIDTH,
+    BASE_HEIGHT: BASE_HEIGHT,
+    ASPECT_RATIO: ASPECT_RATIO,
+    BASE_FONT_SIZE: BASE_FONT_SIZE,
+    MIN_SCALE: MIN_SCALE,
+    MAX_SCALE: MAX_SCALE,
+    getDesignSize: getDesignSize,
+    getScale: getScale
+  };
+})();

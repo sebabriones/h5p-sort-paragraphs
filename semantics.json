@@ -1,63 +1,181 @@
 [
   {
-    "name": "media",
+    "name": "instructions",
     "type": "group",
-    "label": "Media",
-    "importance": "medium",
+    "label": "Instructions",
+    "importance": "high",
+    "optional": true,
     "fields": [
       {
-        "name": "type",
-        "type": "library",
-        "label": "Type",
-        "importance": "medium",
-        "options": [
-          "H5P.Image 1.1",
-          "H5P.Video 1.6",
-          "H5P.Audio 1.5"
-        ],
-        "optional": true,
-        "description": "Optional media to display above the question."
+        "name": "enabled",
+        "type": "boolean",
+        "label": "Show instructions",
+        "default": false
       },
       {
-        "name": "disableImageZooming",
-        "type": "boolean",
-        "label": "Disable image zooming",
-        "importance": "low",
-        "default": false,
+        "name": "text",
+        "type": "text",
+        "widget": "html",
+        "label": "Instructions text",
+        "importance": "high",
         "optional": true,
-        "widget": "showWhen",
-        "showWhen": {
-          "rules": [
-            {
-              "field": "type",
-              "equals": "H5P.Image 1.1"
-            }
-          ]
-        }
+        "tags": [
+          "p",
+          "br",
+          "strong",
+          "em",
+          "ul",
+          "ol",
+          "li"
+        ]
+      },
+      {
+        "name": "displayMode",
+        "type": "select",
+        "label": "Display mode",
+        "default": "both",
+        "options": [
+          {
+            "value": "intro",
+            "label": "Intro only"
+          },
+          {
+            "value": "tab",
+            "label": "Tab only"
+          },
+          {
+            "value": "both",
+            "label": "Intro and tab"
+          }
+        ]
+      },
+      {
+        "name": "introButtonLabel",
+        "type": "text",
+        "label": "Intro button label",
+        "default": "Start",
+        "optional": true
+      },
+      {
+        "name": "tabButtonLabel",
+        "type": "text",
+        "label": "Tab button label",
+        "default": "Instructions",
+        "optional": true
+      },
+      {
+        "name": "startCollapsed",
+        "type": "boolean",
+        "label": "Collapse tab on load",
+        "default": true
+      },
+      {
+        "name": "animation",
+        "type": "group",
+        "label": "Animation",
+        "importance": "low",
+        "optional": true,
+        "fields": [
+          {
+            "name": "introDuration",
+            "type": "number",
+            "label": "Intro curtain duration",
+            "description": "Opening/closing speed for the intro curtain in milliseconds.",
+            "default": 600,
+            "min": 0,
+            "max": 5000,
+            "step": 50,
+            "unit": "ms"
+          },
+          {
+            "name": "tabDuration",
+            "type": "number",
+            "label": "Tab open/close duration",
+            "description": "Opening/closing speed for the instructions tab in milliseconds.",
+            "default": 600,
+            "min": 0,
+            "max": 5000,
+            "step": 50,
+            "unit": "ms"
+          },
+          {
+            "name": "tabClosedOffset",
+            "type": "number",
+            "label": "Tab closed extra offset",
+            "description": "Extra offset (in px) applied when the tab is closed. 0 keeps it flush; higher values hide it more.",
+            "default": 0,
+            "min": 0,
+            "max": 5,
+            "step": 1,
+            "unit": "px"
+          }
+        ]
       }
     ]
   },
   {
-    "label": "Task description",
-    "importance": "high",
-    "name": "taskDescription",
-    "placeholder": "Describe what your students should do ...",
-    "description": "What your students should know.",
-    "type": "text",
-    "widget": "html",
-    "enterMode": "div",
-    "tags": [
-      "strong",
-      "em",
-      "u",
-      "a",
-      "ul",
-      "ol",
-      "h2",
-      "h3",
-      "hr",
-      "pre",
-      "code"
+    "name": "context",
+    "type": "group",
+    "label": "Context (optional)",
+    "importance": "low",
+    "optional": true,
+    "fields": [
+      {
+        "name": "text",
+        "type": "text",
+        "widget": "html",
+        "label": "Context text",
+        "importance": "medium",
+        "optional": true,
+        "description": "Optional supporting text shown beside the question.",
+        "tags": [
+          "p",
+          "br",
+          "strong",
+          "em",
+          "ul",
+          "ol",
+          "li",
+          "code"
+        ]
+      },
+      {
+        "name": "media",
+        "type": "group",
+        "label": "Context image",
+        "importance": "medium",
+        "optional": true,
+        "fields": [
+          {
+            "name": "type",
+            "type": "library",
+            "label": "Image",
+            "importance": "medium",
+            "options": [
+              "H5P.Image 1.1"
+            ],
+            "optional": true,
+            "description": "Optional image shown beside the question."
+          },
+          {
+            "name": "disableImageZooming",
+            "type": "boolean",
+            "label": "Disable image zooming",
+            "importance": "low",
+            "default": false,
+            "optional": true,
+            "widget": "showWhen",
+            "showWhen": {
+              "rules": [
+                {
+                  "field": "type",
+                  "equals": "H5P.Image 1.1"
+                }
+              ]
+            }
+          }
+        ]
+      }
     ]
   },
   {
@@ -139,6 +257,81 @@
               "importance": "low",
               "placeholder": "Fill in the feedback",
               "optional": true
+            },
+            {
+              "name": "appearance",
+              "type": "group",
+              "label": "Appearance settings",
+              "importance": "low",
+              "expanded": false,
+              "optional": true,
+              "fields": [
+                {
+                  "name": "feedbackLeadText",
+                  "type": "text",
+                  "label": "Highlighted lead text",
+                  "importance": "low",
+                  "placeholder": "e.g. Correct! or Incorrect",
+                  "optional": true
+                },
+                {
+                  "name": "feedbackLeadBold",
+                  "type": "boolean",
+                  "label": "Bold lead text",
+                  "importance": "low",
+                  "default": true
+                },
+                {
+                  "name": "feedbackTextAlign",
+                  "type": "select",
+                  "label": "Text alignment",
+                  "description": "Only used when no feedback image is set. With an image, text alignment follows image position (left/right: left aligned, above: centered).",
+                  "importance": "low",
+                  "default": "left",
+                  "options": [
+                    {
+                      "value": "left",
+                      "label": "Left"
+                    },
+                    {
+                      "value": "center",
+                      "label": "Center"
+                    },
+                    {
+                      "value": "right",
+                      "label": "Right"
+                    }
+                  ]
+                },
+                {
+                  "name": "feedbackImage",
+                  "type": "image",
+                  "label": "Feedback image",
+                  "importance": "low",
+                  "optional": true
+                },
+                {
+                  "name": "feedbackImagePosition",
+                  "type": "select",
+                  "label": "Image position",
+                  "importance": "low",
+                  "default": "left",
+                  "options": [
+                    {
+                      "value": "above",
+                      "label": "Above text"
+                    },
+                    {
+                      "value": "left",
+                      "label": "Left of text"
+                    },
+                    {
+                      "value": "right",
+                      "label": "Right of text"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -224,39 +417,65 @@
     ]
   },
   {
-    "name": "l10n",
+    "name": "UI",
     "type": "group",
-    "common": true,
-    "label": "User interface",
+    "label": "User interface translations for sort paragraphs",
     "importance": "low",
+    "common": true,
     "fields": [
       {
-        "name": "checkAnswer",
+        "name": "checkAnswerButton",
         "type": "text",
-        "label": "Text for \"Check\" button",
+        "label": "Check answer button label",
         "importance": "low",
         "default": "Check"
       },
       {
-        "name": "submitAnswer",
+        "name": "submitAnswerButton",
         "type": "text",
-        "label": "Text for \"Submit\" button",
+        "label": "Submit answer button label",
         "importance": "low",
         "default": "Submit"
       },
       {
-        "name": "tryAgain",
-        "label": "Text for \"Retry\" button",
+        "name": "showSolutionButton",
         "type": "text",
-        "importance": "low",
-        "default": "Retry"
-      },
-      {
-        "name": "showSolution",
-        "type": "text",
-        "label": "Text for \"Show solution\" button",
+        "label": "Show solution button label",
         "importance": "low",
         "default": "Show solution"
+      },
+      {
+        "name": "tryAgainButton",
+        "type": "text",
+        "label": "Retry button label",
+        "importance": "low",
+        "default": "Retry",
+        "optional": true
+      },
+      {
+        "name": "scoreBarLabel",
+        "type": "text",
+        "label": "Textual representation of the score bar for those using a readspeaker",
+        "description": "Available variables are :num and :total",
+        "importance": "low",
+        "default": "You got :num out of :total points",
+        "optional": true
+      },
+      {
+        "name": "feedbackPopupCloseLabel",
+        "type": "text",
+        "label": "Feedback popup close button label",
+        "importance": "low",
+        "default": "Close",
+        "optional": true
+      },
+      {
+        "name": "showFeedbackButtonLabel",
+        "type": "text",
+        "label": "Show feedback button label",
+        "importance": "low",
+        "default": "Show feedback",
+        "optional": true
       },
       {
         "name": "up",

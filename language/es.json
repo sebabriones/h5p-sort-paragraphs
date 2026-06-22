@@ -1,21 +1,78 @@
 {
   "semantics": [
     {
-      "label": "Medios",
+      "label": "Instrucciones",
       "fields": [
         {
-          "label": "Tipo",
-          "description": "Medios opcionales mostrados encima de la pregunta."
+          "label": "Mostrar instrucciones"
         },
         {
-          "label": "Deshabilitar acercamiento de imagen"
+          "label": "Texto de las instrucciones"
+        },
+        {
+          "label": "Modo de visualización",
+          "options": [
+            {
+              "label": "Solo introducción"
+            },
+            {
+              "label": "Solo pestaña"
+            },
+            {
+              "label": "Introducción y pestaña"
+            }
+          ]
+        },
+        {
+          "label": "Texto del botón de la introducción",
+          "default": "Comenzar"
+        },
+        {
+          "label": "Texto del botón de la pestaña",
+          "default": "Instrucciones"
+        },
+        {
+          "label": "Mostrar la pestaña contraída al cargar"
+        },
+        {
+          "label": "Animación",
+          "fields": [
+            {
+              "label": "Duración de la cortina de introducción",
+              "description": "Velocidad de apertura/cierre de la cortina de introducción en milisegundos."
+            },
+            {
+              "label": "Duración de apertura/cierre de la pestaña",
+              "description": "Velocidad de apertura/cierre de la pestaña de instrucciones en milisegundos."
+            },
+            {
+              "label": "Desplazamiento extra al cerrar la pestaña",
+              "description": "Margen adicional (en px) cuando la pestaña está cerrada. 0 la deja al ras; valores más altos la ocultan más."
+            }
+          ]
         }
       ]
     },
     {
-      "label": "Descripción de la tarea",
-      "placeholder": "Describe lo que deberían hacer tus alumnos ...",
-      "description": "Lo que tus alumnos deben saber."
+      "label": "Contexto (opcional)",
+      "fields": [
+        {
+          "label": "Texto de contexto",
+          "description": "Texto de apoyo opcional que se muestra junto a la pregunta."
+        },
+        {
+          "label": "Imagen de contexto",
+          "fields": [
+            {
+              "label": "Imagen",
+              "description": "Imagen de apoyo opcional que se muestra junto a la pregunta."
+            },
+            {
+              "label": "Deshabilitar acercamiento de imagen"
+            }
+          ]
+        }
+      ]
     },
     {
       "label": "Párrafos",
@@ -45,6 +102,49 @@
               {
                 "label": "Realimentación para rango de puntuación definido",
                 "placeholder": "Escribe tu retroalimentación"
+              },
+              {
+                "label": "Ajustes de apariencia",
+                "fields": [
+                  {
+                    "label": "Texto destacado inicial"
+                  },
+                  {
+                    "label": "Texto destacado en negrita"
+                  },
+                  {
+                    "label": "Alineación del texto",
+                    "description": "Solo se usa cuando no hay imagen de retroalimentación. Con imagen, la alineación sigue la posición de la imagen (izquierda/derecha: alineado a la izquierda; arriba: centrado).",
+                    "options": [
+                      {
+                        "label": "Izquierda"
+                      },
+                      {
+                        "label": "Centro"
+                      },
+                      {
+                        "label": "Derecha"
+                      }
+                    ]
+                  },
+                  {
+                    "label": "Imagen de retroalimentación"
+                  },
+                  {
+                    "label": "Posición de la imagen",
+                    "options": [
+                      {
+                        "label": "Sobre el texto"
+                      },
+                      {
+                        "label": "A la izquierda del texto"
+                      },
+                      {
+                        "label": "A la derecha del texto"
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           }
@@ -90,22 +190,6 @@
     {
       "label": "Interfaz de usuario",
       "fields": [
-        {
-          "label": "Texto para botón \"Comprobar\"",
-          "default": "Comprobar"
-        },
-        {
-          "label": "Texto para botón \"Enviar\"",
-          "default": "Enviar"
-        },
-        {
-          "label": "Texto para el botón \"Intentar de nuevo\"",
-          "default": "Intentar de nuevo"
-        },
-        {
-          "label": "Texto para botón \"Mostrar solución\"",
-          "default": "Mostrar solución"
-        },
         {
           "label": "Texto para botón \"Arriba\"",
           "default": "Arriba"

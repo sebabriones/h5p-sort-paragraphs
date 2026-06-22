@@ -1,21 +1,78 @@
 {
   "semantics": [
     {
-      "label": "Media",
+      "label": "Instructions",
       "fields": [
         {
-          "label": "Type",
-          "description": "Optional media to display above the question."
+          "label": "Show instructions"
         },
         {
-          "label": "Disable image zooming"
+          "label": "Instructions text"
+        },
+        {
+          "label": "Display mode",
+          "options": [
+            {
+              "label": "Intro only"
+            },
+            {
+              "label": "Tab only"
+            },
+            {
+              "label": "Intro and tab"
+            }
+          ]
+        },
+        {
+          "label": "Intro button label",
+          "default": "Start"
+        },
+        {
+          "label": "Tab button label",
+          "default": "Instructions"
+        },
+        {
+          "label": "Collapse tab on load"
+        },
+        {
+          "label": "Animation",
+          "fields": [
+            {
+              "label": "Intro curtain duration",
+              "description": "Opening/closing speed for the intro curtain in milliseconds."
+            },
+            {
+              "label": "Tab open/close duration",
+              "description": "Opening/closing speed for the instructions tab in milliseconds."
+            },
+            {
+              "label": "Tab closed extra offset",
+              "description": "Extra offset (in px) applied when the tab is closed. 0 keeps it flush; higher values hide it more."
+            }
+          ]
         }
       ]
     },
     {
-      "label": "Task description",
-      "placeholder": "Describe what your students should do ...",
-      "description": "What your students should know."
+      "label": "Context (optional)",
+      "fields": [
+        {
+          "label": "Context text",
+          "description": "Optional supporting text shown beside the question."
+        },
+        {
+          "label": "Context image",
+          "fields": [
+            {
+              "label": "Image",
+              "description": "Optional image shown beside the question."
+            },
+            {
+              "label": "Disable image zooming"
+            }
+          ]
+        }
+      ]
     },
     {
       "label": "Paragraphs",
@@ -45,6 +102,38 @@
               {
                 "label": "Feedback for defined score range",
                 "placeholder": "Fill in the feedback"
+              },
+              {
+                "label": "Appearance settings",
+                "fields": [
+                  {
+                    "label": "Highlighted lead text"
+                  },
+                  {
+                    "label": "Bold lead text"
+                  },
+                  {
+                    "label": "Text alignment",
+                    "description": "Only used when no feedback image is set. With an image, text alignment follows image position (left/right: left aligned, above: centered)."
+                  },
+                  {
+                    "label": "Feedback image"
+                  },
+                  {
+                    "label": "Image position",
+                    "options": [
+                      {
+                        "label": "Above text"
+                      },
+                      {
+                        "label": "Left of text"
+                      },
+                      {
+                        "label": "Right of text"
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           }
@@ -89,36 +178,7 @@
     },
     {
       "label": "User interface",
-      "fields": [
-        {
-          "label": "Text for \"Check\" button",
-          "default": "Check"
-        },
-        {
-          "label": "Text for \"Submit\" button",
-          "default": "Submit"
-        },
-        {
-          "label": "Text for \"Retry\" button",
-          "default": "Retry"
-        },
-        {
-          "label": "Text for \"Show solution\" button",
-          "default": "Show solution"
-        },
-        {
-          "label": "Title for \"Up\" button",
-          "default": "Up"
-        },
-        {
-          "label": "Title for \"Down\" button",
-          "default": "Down"
-        },
-        {
-          "label": "Title for button that is disabled",
-          "default": "Disabled"
-        }
-      ]
+      "fields": []
     },
     {
       "label": "Readspeaker",

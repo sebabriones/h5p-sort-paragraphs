@@ -1,594 +1,608 @@
-// Import required classes
 import SortParagraphsContent from './h5p-sort-paragraphs-content.js';
 import Util from './h5p-sort-paragraphs-util.js';
+import {
+  normalizeCfrdParams,
+  scheduleInstructionsAttach,
+  scheduleDeferredResize,
+  refreshInstructionsScale,
+  getContextLayoutClass,
+  hasContextText,
+  hasContextImage,
+  attachContextImage,
+  stripHtmlText,
+  getInstructionsOptions,
+} from './sort-paragraphs-cfrd-helpers.js';
+
+const VIEW_STATES = { task: 0, results: 1, solutions: 2 };
+const DEFAULT_DESCRIPTION = 'SortParagraphs';
 
 /**
- * Main class.
+ * Sort Paragraphs CFRD — extends H5P.QuestionCFRD (Multi Choice play-area pattern).
+ * @param {object} params
+ * @param {number} contentId
+ * @param {object} [extras]
+ * @constructor
  */
-export default class SortParagraphs extends H5P.Question {
-  /**
-   * @class
-   * @param {object} params Parameters passed by the editor.
-   * @param {number} contentId Content's id.
-   * @param {object} [extras] Saved state, metadata, etc.
-   */
-  constructor(params, contentId, extras = {}) {
-    super('sort-paragraphs'); // CSS class selector for content's iframe
-
-    /*
-     * this.params.behaviour.enableSolutionsButton and this.params.behaviour.enableRetry
-     * are used by H5P's question type contract.
-     * @see {@link https://h5p.org/documentation/developers/contracts#guides-header-8}
-     * @see {@link https://h5p.org/documentation/developers/contracts#guides-header-9}
-     */
-
-    // Make sure all variables are set
-    this.params = Util.extend({
-      media: {},
-      taskDescription: null,
-      paragraphs: [],
-      behaviour: {
-        duplicatesInterchangeable: true,
-        enableSolutionsButton: true,
-        enableRetry: true,
-        scoringMode: 'transitions',
-        applyPenalties: true,
-        addButtonsForMovement: true,
-      },
-      l10n: {
-        checkAnswer: 'Check answer',
-        submitAnswer: 'Submit',
-        showSolution: 'Show solution',
-        tryAgain: 'Retry',
-        up: 'Up',
-        down: 'Down',
-        disabled: 'Disabled',
-      },
-      a11y: {
-        check: 'Check the answers. The responses will be marked as correct or incorrect.',
-        showSolution: 'Show the solution. The correct solution will be displayed.',
-        retry: 'Retry the task. Reset all elements and start the task over again.',
-        listDescription: 'Sortable list of paragraphs.',
-        listDescriptionCheckAnswer: 'List of paragraphs with results.',
-        listDescriptionShowSolution: 'List of paragraphs with solutions.',
-        paragraph: 'Paragraph',
-        sevenOfNine: '@current of @total',
-        instructionsSelected: 'Press spacebar to reorder',
-        grabbed: 'grabbed',
-        currentPosition: 'Current position in list',
-        instructionsGrabbed: 'Press up and down arrow keys to change position, spacebar to drop, escape to cancel',
-        moved: 'moved',
-        dropped: 'dropped',
-        finalPosition: 'Final position',
-        reorderCancelled: 'Reorder cancelled',
-        correct: 'correct',
-        wrong: 'wrong',
-        point: '@score point',
-        nextParagraph: 'Next paragraph',
-        correctParagraph: 'Correct paragraph at position',
-      },
-    }, params);
-
-    this.contentId = contentId;
-    this.extras = extras;
-
-    /*
-     * Yes, I know, H5PIntegration should not be queried directly, but
-     * H5P core doesn't provide this information to libraries.
-     */
-    this.canStoreState = !Number.isNaN(parseInt(H5PIntegration?.saveFreq));
-    this.stateProvider = this.retrieveStateProvider();
-
-    // Sanitize for use as text
-    for (let word in this.params.l10n) {
-      this.params.l10n[word] = Util.stripHTML(Util.htmlDecode(this.params.l10n[word]));
-    }
-
-    const defaultLanguage = (extras && extras.metadata) ? extras.metadata.defaultLanguage || 'en' : 'en';
-    this.languageTag = Util.formatLanguageCode(defaultLanguage);
-
-    // this.previousState now holds the saved content state of the previous session
-    this.previousState = (this.extras.previousState && this.extras.previousState.order) ?
-      this.extras.previousState :
-      null;
-
-    this.content = new SortParagraphsContent(
-      {
-        paragraphs: this.params.paragraphs,
-        addButtonsForMovement: this.params.behaviour.addButtonsForMovement,
-        duplicatesInterchangeable: this.params.behaviour.duplicatesInterchangeable,
-        penalties: this.params.behaviour.applyPenalties,
-        scoringMode: this.params.behaviour.scoringMode,
-        taskDescription: Util.stripHTML(this.params.taskDescription)
-          .replace(/(\r\n|\n|\r)/gm, ' ')
-          .replace(/\s{2}/g, ' ')
-          .trim(),
-        previousState: this.previousState,
-        a11y: this.params.a11y,
-        l10n: {
-          up: this.params.l10n.up,
-          down: this.params.l10n.down,
-          disabled: this.params.l10n.disabled,
-        },
-        viewStates: SortParagraphs.VIEW_STATES,
-      },
-      {
-        onInteracted: () => {
-          this.handleInteracted();
-        },
-        read: (text) => {
-          // Using H5P.Question to let screen reader read text
-          this.read(text);
-        },
-      },
-    );
+function SortParagraphsCFRD(params, contentId, extras) {
+  if (!(this instanceof SortParagraphsCFRD)) {
+    return new SortParagraphsCFRD(params, contentId, extras);
   }
 
-  /**
-   * Register the DOM elements with H5P.Question
-   */
-  registerDomElements() {
-    // Set optional media
-    const media = this.params.media.type;
-    if (media && media.library) {
-      const type = media.library.split(' ')[0];
-      // Image
-      if (type === 'H5P.Image') {
-        if (media.params.file) {
-          this.setImage(media.params.file.path, {
-            disableImageZooming: this.params.media.disableImageZooming,
-            alt: media.params.alt,
-            title: media.params.title,
-            expandImage: media.params.expandImage,
-            minimizeImage: media.params.minimizeImage,
-          });
-        }
-      }
-      // Video
-      else if (type === 'H5P.Video') {
-        if (media.params.sources) {
-          this.setVideo(media);
-        }
-      }
-      // Audio
-      else if (type === 'H5P.Audio') {
-        if (media.params.files) {
-          // Register task audio
-          this.setAudio(media);
-        }
-      }
+  H5P.QuestionCFRD.call(this, 'sort-paragraphs-cfrd', { theme: true });
+
+  const self = this;
+  const $ = H5P.jQuery;
+
+  extras = extras || {};
+  self.contentId = contentId;
+  self.extras = extras;
+
+  self.options = Util.extend({
+    instructions: {},
+    context: {},
+    paragraphs: [],
+    overallFeedback: {
+      popupBackgroundColor: '#ffffff',
+      feedbackTextColor: '#333333',
+      overallFeedback: [],
+    },
+    behaviour: {
+      duplicatesInterchangeable: true,
+      enableSolutionsButton: true,
+      enableRetry: true,
+      scoringMode: 'positions',
+      applyPenalties: true,
+      addButtonsForMovement: true,
+    },
+    UI: {
+      checkAnswerButton: 'Check',
+      submitAnswerButton: 'Submit',
+      tryAgainButton: 'Retry',
+      showSolutionButton: 'Show solution',
+      scoreBarLabel: 'You got :num out of :total points',
+      feedbackPopupCloseLabel: 'Close',
+      showFeedbackButtonLabel: 'Show feedback',
+      up: 'Up',
+      down: 'Down',
+      disabled: 'Disabled',
+    },
+    a11y: {
+      check: 'Check the answers. The responses will be marked as correct or incorrect.',
+      showSolution: 'Show the solution. The correct solution will be displayed.',
+      retry: 'Retry the task. Reset all elements and start the task over again.',
+      yourResult: 'You got @score out of @total points',
+      listDescription: 'Sortable list of paragraphs.',
+      listDescriptionCheckAnswer: 'List of paragraphs with results.',
+      listDescriptionShowSolution: 'List of paragraphs with solutions.',
+      paragraph: 'Paragraph',
+      sevenOfNine: '@current of @total',
+      instructionsSelected: 'Press spacebar to reorder',
+      grabbed: 'grabbed',
+      currentPosition: 'Current position in list',
+      instructionsGrabbed: 'Press up and down arrow keys to change position, spacebar to drop, escape to cancel',
+      moved: 'moved',
+      dropped: 'dropped',
+      finalPosition: 'Final position',
+      reorderCancelled: 'Reorder cancelled',
+      correct: 'correct',
+      wrong: 'wrong',
+      point: '@score point',
+      nextParagraph: 'Next paragraph',
+      correctParagraph: 'Correct paragraph at position',
+    },
+  }, params);
+
+  normalizeCfrdParams(self.options);
+  self.params = self.options;
+
+  self.canStoreState = !Number.isNaN(parseInt(H5PIntegration?.saveFreq));
+  self.stateProvider = self.retrieveStateProvider();
+
+  for (const word in self.params.UI) {
+    if (typeof self.params.UI[word] === 'string') {
+      self.params.UI[word] = Util.stripHTML(Util.htmlDecode(self.params.UI[word]));
+    }
+  }
+
+  const defaultLanguage = (extras && extras.metadata) ?
+    extras.metadata.defaultLanguage || 'en' :
+    'en';
+  self.languageTag = Util.formatLanguageCode(defaultLanguage);
+
+  self.previousState = (self.extras.previousState && self.extras.previousState.order) ?
+    self.extras.previousState :
+    null;
+
+  const instructionsPlain = getInstructionsOptions(self) ?
+    stripHtmlText(self.params.instructions.text) :
+    '';
+
+  self.content = new SortParagraphsContent(
+    {
+      paragraphs: self.params.paragraphs,
+      addButtonsForMovement: self.params.behaviour.addButtonsForMovement,
+      duplicatesInterchangeable: self.params.behaviour.duplicatesInterchangeable,
+      penalties: self.params.behaviour.applyPenalties,
+      scoringMode: self.params.behaviour.scoringMode,
+      listLabelPrefix: instructionsPlain,
+      previousState: self.previousState,
+      a11y: self.params.a11y,
+      l10n: {
+        up: self.params.UI.up,
+        down: self.params.UI.down,
+        disabled: self.params.UI.disabled,
+      },
+      viewStates: VIEW_STATES,
+    },
+    {
+      onInteracted: () => {
+        self.handleInteracted();
+      },
+      read: (text) => {
+        self.read(text);
+      },
+    },
+  );
+
+  const PlayArea = H5P.SortParagraphsCFRD && H5P.SortParagraphsCFRD.PlayArea;
+  self.playAreaSize = PlayArea ? PlayArea.getDesignSize() : null;
+
+  const originalAttach = self.attach;
+  self.attach = function ($container) {
+    originalAttach.call(self, $container);
+    self.$playArea = $container.addClass('h5p-sp-play-area');
+    scheduleInstructionsAttach(self, self.$playArea);
+
+    if (window.ResizeObserver && !self.playAreaResizeObserver && self.$playArea.length) {
+      self.playAreaResizeObserver = new ResizeObserver(function () {
+        self.trigger('resize');
+      });
+      self.playAreaResizeObserver.observe(self.$playArea[0]);
     }
 
-    // Register task introduction text
-    if (this.params.taskDescription) {
-      const introduction = document.createElement('div');
-      introduction.classList.add('h5p-sort-paragraphs-task-description');
-      introduction.innerHTML = this.params.taskDescription;
-      this.setIntroduction(introduction);
+    scheduleDeferredResize(self);
+  };
+
+  self.on('resize', function (event) {
+    if (event && event.data && event.data.repositionOnly) {
+      return;
     }
 
-    // Current user view
-    this.setViewState('task');
+    if (!self.$playArea || !self.$playArea.length || !PlayArea) {
+      if (self.content) {
+        self.content.resize();
+      }
+      return;
+    }
 
-    // Register content with H5P.Question
-    this.setContent(this.content.getDOM());
+    if (!self.$playArea.is(':visible')) {
+      scheduleDeferredResize(self);
+      return;
+    }
 
-    this.previousState = this.previousState ?? {};
+    const design = self.playAreaSize;
+    let width = self.$playArea.width();
+
+    if (width <= 0) {
+      width = self.$playArea.parent().width() || design.baseWidth;
+    }
+
+    const scale = PlayArea.getScale(width);
+    const fontSize = (design.baseFontSize * scale) + 'px';
+
+    self.$playArea.css({
+      width: '100%',
+      height: '',
+      fontSize: fontSize,
+      '--sp-scale': scale.toFixed(4),
+    });
+
+    const $popup = self.$playArea.find('.h5p-question-feedback.h5p-question-popup');
+    $popup.css('fontSize', fontSize);
+
+    if ($popup.length && $popup.hasClass('h5p-question-visible')) {
+      setTimeout(function () {
+        self.trigger('resize', { repositionOnly: true });
+      }, 0);
+    }
+
+    refreshInstructionsScale(self);
+
+    if (self.content) {
+      self.content.resize();
+    }
+  });
+
+  self.registerDomElements = function () {
+    const context = self.params.context;
+    const contextLayoutClass = getContextLayoutClass(context);
+    const contextTextId = 'sort-paragraphs-' + self.contentId + '-context';
+    const $listDom = $(self.content.getDOM());
+    let $contextMedia;
+
+    if (contextLayoutClass) {
+      const $layout = $('<div>', { class: 'h5p-sp-slide-layout' });
+      const $contextAside = $('<aside>', {
+        class: 'h5p-sp-context',
+        'aria-label': 'Context',
+      });
+      const $taskColumn = $('<div>', { class: 'h5p-sp-task-column' });
+
+      if (hasContextText(context)) {
+        $contextAside.append($('<div>', {
+          id: contextTextId,
+          class: 'h5p-sp-context-text',
+          html: context.text,
+        }));
+      }
+
+      if (hasContextImage(context)) {
+        $contextMedia = $('<div>', { class: 'h5p-sp-context-media' });
+        $contextAside.append($contextMedia);
+      }
+
+      $taskColumn.append($listDom);
+      $layout.append($contextAside);
+      $layout.append($taskColumn);
+
+      self.setContent($('<div>', {
+        class: 'h5p-sp-has-context ' + contextLayoutClass,
+      }).append($layout), {
+        class: 'h5p-sp-with-context',
+      });
+
+      if ($contextMedia && $contextMedia.length) {
+        attachContextImage(context, self.contentId, $contextMedia);
+      }
+    }
+    else {
+      self.setContent($listDom, {
+        class: 'h5p-sp-task-only',
+      });
+    }
+
+    self.setViewState('task');
+
+    self.previousState = self.previousState ?? {};
     if (
-      (
-        this.previousState.viewState === SortParagraphs.VIEW_STATES.results ||
-        this.previousState.viewState === SortParagraphs.VIEW_STATES.solutions
-      )
+      self.previousState.viewState === VIEW_STATES.results ||
+      self.previousState.viewState === VIEW_STATES.solutions
     ) {
-      // Need to wait until DOM is ready for us
       H5P.externalDispatcher.on('initialized', () => {
-        this.isExternalCall = true; // Prevent focussing
-        if (this.previousState.viewState === SortParagraphs.VIEW_STATES.results) {
-          this.setViewState('results');
-          this.checkAnswer();
+        self.isExternalCall = true;
+        if (self.previousState.viewState === VIEW_STATES.results) {
+          self.setViewState('results');
+          self.checkAnswer();
         }
         else {
-          this.setViewState('solutions');
-          this.checkAnswer();
-          this.hideButton('show-solution');
-          this.showSolutions();
+          self.setViewState('solutions');
+          self.checkAnswer();
+          self.hideButton('show-solution');
+          self.showSolutions();
         }
-        this.isExternalCall = false;
+        self.isExternalCall = false;
       });
     }
     else {
-      this.previousState.viewState = SortParagraphs.VIEW_STATES.task;
+      self.previousState.viewState = VIEW_STATES.task;
     }
 
-    // Register Buttons
-    this.addButtons();
+    self.addButtons();
+    self.trigger('resize');
+  };
 
-    // Inform content about resize
-    this.on('resize', () => {
-      this.content.resize();
-    });
-
-    this.trigger('resize');
-  }
-
-  /**
-   * Add all the buttons that shall be passed to H5P.Question.
-   */
-  addButtons() {
-    // Check answer button
-    this.addButton('check-answer', this.params.l10n.checkAnswer, () => {
-      this.checkAnswer();
+  self.addButtons = function () {
+    self.addButton('check-answer', self.params.UI.checkAnswerButton, () => {
+      self.checkAnswer();
     }, true, {
-      'aria-label': this.params.a11y.check,
+      'aria-label': self.params.a11y.check,
     }, {
-      contentData: this.extras,
-      textIfSubmitting: this.params.l10n.submitAnswer,
+      contentData: self.extras,
+      textIfSubmitting: self.params.UI.submitAnswerButton,
+      icon: 'check',
     });
 
-    // Show solution button
-    this.addButton('show-solution', this.params.l10n.showSolution, () => {
-      this.hideButton('show-solution');
-      this.showSolutions();
+    self.addButton('show-solution', self.params.UI.showSolutionButton, () => {
+      self.hideButton('show-solution');
+      self.showSolutions();
     }, false, {
-      'aria-label': this.params.a11y.showSolution,
-    }, {});
+      'aria-label': self.params.a11y.showSolution,
+    }, {
+      styleType: 'secondary',
+      icon: 'show-solutions',
+    });
 
-    // Retry button
-    this.addButton('try-again', this.params.l10n.tryAgain, () => {
-      this.resetTask();
+    self.addButton('try-again', self.params.UI.tryAgainButton, () => {
+      self.resetTask();
     }, false, {
-      'aria-label': this.params.a11y.retry,
-    }, {});
-  }
-
-  /**
-   * Check if result has been submitted or input has been given.
-   * @returns {boolean} True, if answer was given.
-   * @see contract at {@link https://h5p.org/documentation/developers/contracts#guides-header-1}
-   */
-  getAnswerGiven() {
-    return this.content?.isAnswerGiven() || false;
-  }
-
-  /**
-   * Get latest score.
-   * @returns {number} latest score.
-   * @see contract at {@link https://h5p.org/documentation/developers/contracts#guides-header-2}
-   */
-  getScore() {
-    if (!this.getAnswerGiven()) {
-      return 0;
-    }
-
-    let score = 0;
-
-    if (!this.content) {
-      score = this.previousState?.score || 0;
-    }
-    else if (this.viewState === SortParagraphs.VIEW_STATES.solutions) {
-      score = this.currentScore || this.previousState?.score || 0;
-    }
-    else {
-      score = (this.content.computeResults()).score;
-    }
-
-    this.currentScore = score;
-
-    return score;
-  }
-
-  /**
-   * Get maximum possible score.
-   * @returns {number} Score necessary for mastering.
-   * @see contract at {@link https://h5p.org/documentation/developers/contracts#guides-header-3}
-   */
-  getMaxScore() {
-    const length = this.params.paragraphs.length;
-    // For transitions mode, cound number of paragraph transitions
-    return (this.params.behaviour.scoringMode === 'positions') ? length : length - 1;
-  }
-
-  /**
-   * Show solutions.
-   * @see contract at {@link https://h5p.org/documentation/developers/contracts#guides-header-4}
-   */
-  showSolutions() {
-    this.setViewState('solutions');
-    this.content.showSolutions({ skipFocus: this.isExternalCall });
-    this.trigger('resize');
-  }
-
-  /**
-   * Reset task.
-   * @see contract at {@link https://h5p.org/documentation/developers/contracts#guides-header-5}
-   */
-  resetTask() {
-    this.showButton('check-answer');
-    this.hideButton('show-solution');
-    this.hideButton('try-again');
-    this.removeFeedback();
-    this.content.reset();
-    this.previousState = {};
-    this.setViewState('task');
-    this.trigger('resize');
-  }
-
-  /**
-   * Get xAPI data.
-   * @returns {object} XAPI statement.
-   * @see contract at {@link https://h5p.org/documentation/developers/contracts#guides-header-6}
-   */
-  getXAPIData() {
-    return { statement: this.getXAPIAnswerEvent().data.statement };
-  }
-
-  /**
-   * Build xAPI answer event.
-   * @returns {H5P.XAPIEvent} XAPI answer event.
-   */
-  getXAPIAnswerEvent() {
-    const xAPIEvent = this.createXAPIEvent('answered');
-
-    xAPIEvent.setScoredResult(this.getScore(), this.getMaxScore(), this,
-      true, this.isPassed());
-
-    xAPIEvent.data.statement.result.response = this.content.getDraggablesOrder().join('[,]');
-
-    return xAPIEvent;
-  }
-
-  /**
-   * Create an xAPI event.
-   * @param {string} verb Short id of the verb we want to trigger.
-   * @returns {H5P.XAPIEvent} Event template.
-   */
-  createXAPIEvent(verb) {
-    const xAPIEvent = this.createXAPIEventTemplate(verb);
-    Util.extend(
-      xAPIEvent.getVerifiedStatementValue(['object', 'definition']),
-      this.getxAPIDefinition());
-    return xAPIEvent;
-  }
-
-  /**
-   * Get the xAPI definition for the xAPI object.
-   * @returns {object} XAPI definition.
-   */
-  getxAPIDefinition() {
-    const definition = {};
-    definition.name = {};
-    definition.name[this.languageTag] = this.getTitle();
-    // Fallback for h5p-php-reporting, expects en-US
-    definition.name['en-US'] = definition.name[this.languageTag];
-    definition.description = {};
-    definition.description[this.languageTag] = Util.stripHTML(this.getDescription());
-    // Fallback for h5p-php-reporting, expects en-US
-    definition.description['en-US'] = definition.description[this.languageTag];
-    definition.type = 'http://adlnet.gov/expapi/activities/cmi.interaction';
-    definition.interactionType = 'sequencing';
-    definition.correctResponsesPattern = [];
-    this.params.paragraphs.forEach((paragraph, index) => {
-      definition.correctResponsesPattern.push(index);
-    });
-    definition.correctResponsesPattern = [definition.correctResponsesPattern.join('[,]')];
-    definition.choices = this.params.paragraphs.map((paragraph, index) => {
-      paragraph = Util.stripHTML(paragraph);
-
-      const choicesDescription = {};
-      choicesDescription[this.languageTag] = paragraph;
-      // Fallback for h5p-php-reporting, expects en-US
-      choicesDescription['en-US'] = choicesDescription[this.languageTag];
-
-      return {
-        id: index,
-        description: choicesDescription,
-      };
+      'aria-label': self.params.a11y.retry,
+    }, {
+      styleType: 'secondary',
+      icon: 'retry',
     });
 
-    // Set extension
-    definition.extensions = definition.extensions || {};
-    if (this.content.options.scoringMode === 'transitions') {
-      definition.extensions['https://h5p.org/x-api/sequencing-type'] = 'transitions';
-    }
+    self.addButton('show-feedback', self.params.UI.showFeedbackButtonLabel, () => {
+      self.showFeedbackPopup();
+      self.hideButton('show-feedback');
+    }, false);
+    self.hideButton('show-feedback');
+  };
 
-    if (this.content.options.duplicatesInterchangeable) {
-      definition.extensions['https://h5p.org/x-api/duplicates-interchangeable'] = 1;
-    }
-
-    return definition;
-  }
-
-  /**
-   * Check answer.
-   */
-  checkAnswer() {
-    if (this.viewState === SortParagraphs.VIEW_STATES.task) {
-      // checkAnswer was not triggered to recreate previous state
-      this.trigger(this.getXAPIAnswerEvent());
-
-      this.storeH5PState();
-    }
-
-    this.setViewState('results');
-    this.trigger('resize');
-
-    const isExternalCall = this.isExternalCall;
-
-    setTimeout(() => {
-      this.content.disable();
-
-      this.hideButton('check-answer');
-
-      if (
-        this.viewState !== SortParagraphs.VIEW_STATES.solutions &&
-        this.params.behaviour.enableSolutionsButton &&
-        this.getScore() !== this.getMaxScore()
-      ) {
-        this.showButton('show-solution');
-      }
-
-      if (this.params.behaviour.enableRetry) {
-        this.showButton('try-again');
-      }
-
-      this.content.showResults({
-        skipExplanation: this.viewState === SortParagraphs.VIEW_STATES.solutions,
-        skipFocus: isExternalCall,
-      });
-
-      const score = this.getScore();
-      const maxScore = this.getMaxScore();
-
-      const textScore = H5P.Question.determineOverallFeedback(
-        this.params.overallFeedback, score / maxScore);
-
-      // Output via H5P.Question - expects :num and :total
-      const ariaMessage = this.params.a11y.yourResult
-        .replace('@score', ':num')
-        .replace('@total', ':total');
-
-      this.setFeedback(
-        textScore.trim(),
-        score,
-        maxScore,
-        ariaMessage,
-      );
-    }, 0); // Prevent flickering when content resizes by button alignment
-  }
-
-  /**
-   * Determine whether the task has been passed by the user.
-   * @returns {boolean} True if user passed or task is not scored.
-   */
-  isPassed() {
-    return this.getScore() >= this.getMaxScore();
-  }
-
-  /**
-   * Get task title.
-   * @returns {string} Title.
-   */
-  getTitle() {
-    let raw;
-    if (this.extras.metadata) {
-      raw = this.extras.metadata.title;
-    }
-    raw = raw || SortParagraphs.DEFAULT_DESCRIPTION;
-
-    // H5P Core function: createTitle
-    return H5P.createTitle(raw);
-  }
-
-  /**
-   * Get task description.
-   * @returns {string} Description.
-   */
-  getDescription() {
-    return this.params.taskDescription || SortParagraphs.DEFAULT_DESCRIPTION;
-  }
-
-  /**
-   * Answer call to return the current state.
-   * @returns {object|undefined} Current state.
-   */
-  getCurrentState() {
-    /*
-     * H5P integrations may (for instance) show a restart button if there is
-     * a previous state set, so here not storing the state if no answer has been
-     * given by the user and there's no order stored previously - preventing
-     * to show up that restart button without the need to.
-     */
-    if (!this.getAnswerGiven() && !this.previousState?.order) {
-      return {};
-    }
-
-    return {
-      order: this.content.getDraggablesOrder(),
-      viewState: this.viewState,
-      score: this.viewState === SortParagraphs.VIEW_STATES.task ?
-        0 :
-        this.getScore(),
-    };
-  }
-
-  /**
-   * Handle user interacted.
-   */
-  handleInteracted() {
-    this.triggerXAPI('interacted');
-  }
-
-  /**
-   * Set view state.
-   * @param {string|number} state State to be set.
-   */
-  setViewState(state) {
-    if (
-      typeof state === 'string' &&
-      SortParagraphs.VIEW_STATES[state] !== undefined
-    ) {
-      this.viewState = SortParagraphs.VIEW_STATES[state];
-    }
-    else if (
-      typeof state === 'number' &&
-      Object.values(SortParagraphs.VIEW_STATES).includes(state)
-    ) {
-      this.viewState = state;
-
-      this.content.setViewState(
-        SortParagraphs.VIEW_STATES.find((value) => value === state).keys[0],
-      );
-    }
-  }
-
-  /**
-   * Retrieve state provider to get current state from.
-   * @returns {H5P.ContentType|null} Instance to get current state from.
-   */
-  retrieveStateProvider() {
-    let stateProvider = this.isRoot() ? this : null;
-    if (stateProvider) {
-      return stateProvider;
-    }
-    // Find root instance for our subcontent instance
-    const rootInstance = H5P.instances
-      .find((instance) => instance.contentId === this.contentId);
-
-    // Check root instance for having support for resume
-    if (typeof rootInstance?.getCurrentState === 'function') {
-      stateProvider = rootInstance;
-    }
-
-    return stateProvider;
-  }
-
-  /**
-   * Store current state.
-   *
-   * Could be amended if required, of course, e.g. add an options
-   * argument to control the 'deleteOnChange' value, add a callback
-   * function to be passed to H5P.setUserData, etc.
-   */
-  storeH5PState() {
-    if (!this.canStoreState) {
-      return; // Server does not store state.
-    }
-
-    if (!this.stateProvider) {
-      return; // No state provider available.
-    }
-
-    H5P.setUserData(
-      this.contentId, // Set automatically by H5P core
-      'state',
-      this.stateProvider.getCurrentState(),
-      { deleteOnChange: true }, // Use default behavior of H5P core
+  self.showOverallFeedback = function () {
+    const score = self.getScore();
+    const max = self.getMaxScore();
+    const ratio = max > 0 ? score / max : 0;
+    const resolved = H5P.QuestionCFRD.resolveOverallFeedback(
+      self.params.overallFeedback,
+      ratio,
+      self.contentId,
+      score,
+      max,
     );
-  }
+    let popupSettings;
+
+    if (resolved && resolved.html && resolved.html.trim().length > 0) {
+      popupSettings = {
+        showAsPopup: true,
+        closeText: self.params.UI.feedbackPopupCloseLabel || 'Close',
+        alwaysShowClose: true,
+        dismissible: true,
+        popupBackgroundColor: resolved.popupBackgroundColor,
+        plainText: resolved.plainText,
+        onClose: function () {
+          self.showButton('show-feedback');
+        },
+      };
+      self.hideButton('show-feedback');
+    }
+
+    self.setFeedback(
+      resolved ? resolved.html : '',
+      score,
+      max,
+      self.params.UI.scoreBarLabel,
+      false,
+      popupSettings,
+    );
+  };
 }
 
-/** @constant {string} */
-SortParagraphs.DEFAULT_DESCRIPTION = 'SortParagraphs';
+SortParagraphsCFRD.prototype = Object.create(H5P.QuestionCFRD.prototype);
+SortParagraphsCFRD.prototype.constructor = SortParagraphsCFRD;
+SortParagraphsCFRD.VIEW_STATES = VIEW_STATES;
+SortParagraphsCFRD.DEFAULT_DESCRIPTION = DEFAULT_DESCRIPTION;
 
-/** @constant {object} view states */
-SortParagraphs.VIEW_STATES = { task: 0, results: 1, solutions: 2 };
+SortParagraphsCFRD.prototype.getAnswerGiven = function () {
+  return this.content?.isAnswerGiven() || false;
+};
+
+SortParagraphsCFRD.prototype.getScore = function () {
+  if (!this.getAnswerGiven()) {
+    return 0;
+  }
+
+  let score = 0;
+
+  if (!this.content) {
+    score = this.previousState?.score || 0;
+  }
+  else if (this.viewState === VIEW_STATES.solutions) {
+    score = this.currentScore || this.previousState?.score || 0;
+  }
+  else {
+    score = (this.content.computeResults()).score;
+  }
+
+  this.currentScore = score;
+
+  return score;
+};
+
+SortParagraphsCFRD.prototype.getMaxScore = function () {
+  const length = this.params.paragraphs.length;
+  return (this.params.behaviour.scoringMode === 'positions') ? length : length - 1;
+};
+
+SortParagraphsCFRD.prototype.showSolutions = function () {
+  this.setViewState('solutions');
+  this.content.showSolutions({ skipFocus: this.isExternalCall });
+  this.trigger('resize');
+};
+
+SortParagraphsCFRD.prototype.resetTask = function () {
+  this.showButton('check-answer');
+  this.hideButton('show-solution');
+  this.hideButton('try-again');
+  this.hideButton('show-feedback');
+  this.removeFeedback();
+  this.content.reset();
+  this.previousState = {};
+  this.setViewState('task');
+  this.trigger('resize');
+};
+
+SortParagraphsCFRD.prototype.getXAPIData = function () {
+  return { statement: this.getXAPIAnswerEvent().data.statement };
+};
+
+SortParagraphsCFRD.prototype.getXAPIAnswerEvent = function () {
+  const xAPIEvent = this.createXAPIEvent('answered');
+
+  xAPIEvent.setScoredResult(this.getScore(), this.getMaxScore(), this,
+    true, this.isPassed());
+
+  xAPIEvent.data.statement.result.response = this.content.getDraggablesOrder().join('[,]');
+
+  return xAPIEvent;
+};
+
+SortParagraphsCFRD.prototype.createXAPIEvent = function (verb) {
+  const xAPIEvent = this.createXAPIEventTemplate(verb);
+  Util.extend(
+    xAPIEvent.getVerifiedStatementValue(['object', 'definition']),
+    this.getxAPIDefinition());
+  return xAPIEvent;
+};
+
+SortParagraphsCFRD.prototype.getxAPIDefinition = function () {
+  const definition = {};
+  definition.name = {};
+  definition.name[this.languageTag] = this.getTitle();
+  definition.name['en-US'] = definition.name[this.languageTag];
+  definition.description = {};
+  definition.description[this.languageTag] = Util.stripHTML(this.getDescription());
+  definition.description['en-US'] = definition.description[this.languageTag];
+  definition.type = 'http://adlnet.gov/expapi/activities/cmi.interaction';
+  definition.interactionType = 'sequencing';
+  definition.correctResponsesPattern = [];
+  this.params.paragraphs.forEach((paragraph, index) => {
+    definition.correctResponsesPattern.push(index);
+  });
+  definition.correctResponsesPattern = [definition.correctResponsesPattern.join('[,]')];
+  definition.choices = this.params.paragraphs.map((paragraph, index) => {
+    paragraph = Util.stripHTML(paragraph);
+
+    const choicesDescription = {};
+    choicesDescription[this.languageTag] = paragraph;
+    choicesDescription['en-US'] = choicesDescription[this.languageTag];
+
+    return {
+      id: index,
+      description: choicesDescription,
+    };
+  });
+
+  definition.extensions = definition.extensions || {};
+  if (this.content.options.scoringMode === 'transitions') {
+    definition.extensions['https://h5p.org/x-api/sequencing-type'] = 'transitions';
+  }
+
+  if (this.content.options.duplicatesInterchangeable) {
+    definition.extensions['https://h5p.org/x-api/duplicates-interchangeable'] = 1;
+  }
+
+  return definition;
+};
+
+SortParagraphsCFRD.prototype.checkAnswer = function () {
+  const self = this;
+
+  if (self.viewState === VIEW_STATES.task) {
+    self.trigger(self.getXAPIAnswerEvent());
+    self.storeH5PState();
+  }
+
+  self.setViewState('results');
+  self.trigger('resize');
+
+  const isExternalCall = self.isExternalCall;
+
+  setTimeout(() => {
+    self.content.disable();
+    self.hideButton('check-answer');
+
+    if (
+      self.viewState !== VIEW_STATES.solutions &&
+      self.params.behaviour.enableSolutionsButton &&
+      self.getScore() !== self.getMaxScore()
+    ) {
+      self.showButton('show-solution');
+    }
+
+    if (self.params.behaviour.enableRetry) {
+      self.showButton('try-again');
+    }
+
+    self.content.showResults({
+      skipExplanation: self.viewState === VIEW_STATES.solutions,
+      skipFocus: isExternalCall,
+    });
+
+    self.showOverallFeedback();
+  }, 0);
+};
+
+SortParagraphsCFRD.prototype.isPassed = function () {
+  return this.getScore() >= this.getMaxScore();
+};
+
+SortParagraphsCFRD.prototype.getTitle = function () {
+  let raw;
+  if (this.extras.metadata) {
+    raw = this.extras.metadata.title;
+  }
+  raw = raw || DEFAULT_DESCRIPTION;
+  return H5P.createTitle(raw);
+};
+
+SortParagraphsCFRD.prototype.getDescription = function () {
+  const instructions = getInstructionsOptions(this);
+  if (instructions) {
+    return instructions.text;
+  }
+  return DEFAULT_DESCRIPTION;
+};
+
+SortParagraphsCFRD.prototype.getCurrentState = function () {
+  if (!this.getAnswerGiven() && !this.previousState?.order) {
+    return {};
+  }
+
+  return {
+    order: this.content.getDraggablesOrder(),
+    viewState: this.viewState,
+    score: this.viewState === VIEW_STATES.task ?
+      0 :
+      this.getScore(),
+  };
+};
+
+SortParagraphsCFRD.prototype.handleInteracted = function () {
+  this.triggerXAPI('interacted');
+};
+
+SortParagraphsCFRD.prototype.setViewState = function (state) {
+  if (typeof state === 'string' && VIEW_STATES[state] !== undefined) {
+    this.viewState = VIEW_STATES[state];
+    if (this.content) {
+      this.content.setViewState(state);
+    }
+  }
+  else if (typeof state === 'number' && Object.values(VIEW_STATES).includes(state)) {
+    this.viewState = state;
+    const key = Object.entries(VIEW_STATES).find(([, value]) => value === state)?.[0];
+    if (key && this.content) {
+      this.content.setViewState(key);
+    }
+  }
+};
+
+SortParagraphsCFRD.prototype.retrieveStateProvider = function () {
+  let stateProvider = this.isRoot() ? this : null;
+  if (stateProvider) {
+    return stateProvider;
+  }
+  const rootInstance = H5P.instances
+    .find((instance) => instance.contentId === this.contentId);
+
+  if (typeof rootInstance?.getCurrentState === 'function') {
+    stateProvider = rootInstance;
+  }
+
+  return stateProvider;
+};
+
+SortParagraphsCFRD.prototype.storeH5PState = function () {
+  if (!this.canStoreState || !this.stateProvider) {
+    return;
+  }
+
+  H5P.setUserData(
+    this.contentId,
+    'state',
+    this.stateProvider.getCurrentState(),
+    { deleteOnChange: true },
+  );
+};
+
+export default SortParagraphsCFRD;
