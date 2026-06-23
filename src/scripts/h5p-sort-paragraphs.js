@@ -53,6 +53,7 @@ function SortParagraphsCFRD(params, contentId, extras) {
       scoringMode: 'positions',
       applyPenalties: true,
       addButtonsForMovement: true,
+      showScorePoints: false,
     },
     UI: {
       checkAnswerButton: 'Check',
@@ -124,6 +125,7 @@ function SortParagraphsCFRD(params, contentId, extras) {
       duplicatesInterchangeable: self.params.behaviour.duplicatesInterchangeable,
       penalties: self.params.behaviour.applyPenalties,
       scoringMode: self.params.behaviour.scoringMode,
+      showScorePoints: self.params.behaviour.showScorePoints === true,
       listLabelPrefix: instructionsPlain,
       previousState: self.previousState,
       a11y: self.params.a11y,

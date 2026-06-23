@@ -1,140 +1,72 @@
 {
 
   "title": "Sort the Paragraphs (CFRD)",
-
   "description": "Let students sort paragraphs into the correct order",
-
   "machineName": "H5P.SortParagraphsCFRD",
-
   "majorVersion": 1,
-
   "minorVersion": 1,
-
-  "patchVersion": 3,
-
+  "patchVersion": 4,
   "runnable": 1,
-
   "author": "sbriones (CFRD-UDEC)",
-
   "license": "MIT",
-
   "coreApi": {
-
     "majorVersion": 1,
-
     "minorVersion": 28
-
   },
-
   "embedTypes": [
-
     "iframe"
-
   ],
-
   "preloadedJs": [
-
     {
-
       "path": "js/play-area-scale.js"
-
     },
-
     {
-
       "path": "dist/h5p-sort-paragraphs-cfrd.js"
-
     }
-
   ],
-
   "preloadedCss": [
-
     {
-
       "path": "dist/h5p-sort-paragraphs-cfrd.css"
-
     }
-
   ],
-
   "preloadedDependencies": [
-
     {
-
       "machineName": "FontAwesome",
-
       "majorVersion": 4,
-
       "minorVersion": 5
-
     },
-
     {
-
       "machineName": "H5P.JoubelUICFRD",
-
       "majorVersion": 1,
-
       "minorVersion": 1
-
     },
-
     {
-
       "machineName": "H5P.QuestionCFRD",
-
       "majorVersion": 1,
-
       "minorVersion": 1
-
     },
-
     {
-
       "machineName": "H5P.Instructions",
-
       "majorVersion": 1,
-
       "minorVersion": 0
-
     },
-
     {
-
       "machineName": "H5P.Image",
-
       "majorVersion": 1,
-
       "minorVersion": 1
-
     }
-
   ],
-
   "editorDependencies": [
-
     {
-
       "machineName": "H5PEditor.RangeList",
-
       "majorVersion": 1,
-
       "minorVersion": 0
-
     },
-
     {
-
       "machineName": "H5PEditor.ShowWhen",
-
       "majorVersion": 1,
-
       "minorVersion": 0
-
     }
-
   ]
-
 }
 

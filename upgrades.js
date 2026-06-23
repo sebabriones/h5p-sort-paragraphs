@@ -159,6 +159,17 @@ H5PUpgrades['H5P.SortParagraphsCFRD'] = (function () {
 
           finished(null, parameters);
         },
+
+        /**
+         * CFRD visual: theme colors, scaling, showScorePoints default.
+         */
+        4: function (parameters, finished) {
+          if (parameters && parameters.behaviour && parameters.behaviour.showScorePoints === undefined) {
+            parameters.behaviour.showScorePoints = false;
+          }
+
+          finished(null, parameters);
+        },
       },
     },
   };

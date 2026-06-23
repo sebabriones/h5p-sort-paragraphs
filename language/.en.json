@@ -169,6 +169,10 @@
           "description": "On mobile devices, buttons for moving paragraphs can offer an extra accessibility benefit. If you prefer, you can deactivate them here."
         },
         {
+          "label": "Show score points",
+          "description": "Show points earned for each paragraph or transition when checking answers."
+        },
+        {
           "label": "Enable \"Retry\" button"
         },
         {

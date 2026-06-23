@@ -399,6 +399,14 @@
         "optional": true
       },
       {
+        "name": "showScorePoints",
+        "type": "boolean",
+        "label": "Show score points",
+        "description": "Show points earned for each paragraph or transition when checking answers.",
+        "importance": "low",
+        "default": false
+      },
+      {
         "name": "enableRetry",
         "label": "Enable \"Retry\" button",
         "type": "boolean",

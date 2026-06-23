@@ -180,6 +180,10 @@
           "description": "En dispositivos móviles, los botones para mover párrafos pueden a menudo ofrecer un beneficio extra de accesibilidad. Si lo prefieres, puedes desactivarlos aquí."
         },
         {
+          "label": "Mostrar puntos de puntuación",
+          "description": "Muestra los puntos obtenidos por cada párrafo o transición al comprobar las respuestas."
+        },
+        {
           "label": "Habilitar botón \"Intentar de nuevo\""
         },
         {
