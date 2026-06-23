@@ -146,58 +146,42 @@ function SortParagraphsCFRD(params, contentId, extras) {
     },
   );
 
-  const PlayArea = H5P.SortParagraphsCFRD && H5P.SortParagraphsCFRD.PlayArea;
-  self.playAreaSize = PlayArea ? PlayArea.getDesignSize() : null;
-
-  const originalAttach = self.attach;
-  self.attach = function ($container) {
-    originalAttach.call(self, $container);
-    self.$playArea = $container.addClass('h5p-sp-play-area');
-    scheduleInstructionsAttach(self, self.$playArea);
-
-    if (window.ResizeObserver && !self.playAreaResizeObserver && self.$playArea.length) {
-      self.playAreaResizeObserver = new ResizeObserver(function () {
-        self.trigger('resize');
-      });
-      self.playAreaResizeObserver.observe(self.$playArea[0]);
-    }
-
-    scheduleDeferredResize(self);
+  const getPlayArea = function () {
+    return H5P.SortParagraphsCFRD && H5P.SortParagraphsCFRD.PlayArea;
   };
+  const PlayArea = getPlayArea();
+  self.playAreaSize = PlayArea ? PlayArea.getDesignSize() : null;
+  let spResizeRaf = null;
 
-  self.on('resize', function (event) {
-    if (event && event.data && event.data.repositionOnly) {
+  const applyPlayAreaScale = function (event) {
+    const playAreaApi = getPlayArea();
+    const design = self.playAreaSize || (playAreaApi ? playAreaApi.getDesignSize() : null);
+
+    if (!playAreaApi || !design) {
       return;
     }
 
-    if (!self.$playArea || !self.$playArea.length || !PlayArea) {
-      if (self.content) {
-        self.content.resize();
-      }
-      return;
+    const playAreaEl = self.$playArea[0];
+    let width = playAreaApi.getMeasureWidth(playAreaEl);
+
+    if (!width || width <= 0) {
+      width = design.baseWidth;
     }
 
-    if (!self.$playArea.is(':visible')) {
-      scheduleDeferredResize(self);
-      return;
-    }
-
-    const design = self.playAreaSize;
-    let width = self.$playArea.width();
-
-    if (width <= 0) {
-      width = self.$playArea.parent().width() || design.baseWidth;
-    }
-
-    const scale = PlayArea.getScale(width);
-    const fontSize = (design.baseFontSize * scale) + 'px';
+    const scale = playAreaApi.getScale(width);
+    const fontSize = playAreaApi.getScaledFontSize(width) + 'px';
 
     self.$playArea.css({
       width: '100%',
+      maxWidth: '100%',
       height: '',
       fontSize: fontSize,
       '--sp-scale': scale.toFixed(4),
     });
+
+    self.$playArea
+      .find('.h5p-sp-context-text, .h5p-sort-paragraphs-content')
+      .css('fontSize', '');
 
     const $popup = self.$playArea.find('.h5p-question-feedback.h5p-question-popup');
     $popup.css('fontSize', fontSize);
@@ -213,6 +197,55 @@ function SortParagraphsCFRD(params, contentId, extras) {
     if (self.content) {
       self.content.resize();
     }
+  };
+
+  const originalAttach = self.attach;
+  self.attach = function ($container) {
+    originalAttach.call(self, $container);
+    self.$playArea = $container.addClass('h5p-sp-play-area');
+    scheduleInstructionsAttach(self, self.$playArea);
+
+    if (window.ResizeObserver && !self.playAreaResizeObserver && self.$playArea.length) {
+      self.playAreaResizeObserver = new ResizeObserver(function () {
+        self.trigger('resize');
+      });
+      const parentEl = self.$playArea.parent()[0];
+      if (parentEl) {
+        self.playAreaResizeObserver.observe(parentEl);
+      }
+      self.playAreaResizeObserver.observe(self.$playArea[0]);
+    }
+
+    scheduleDeferredResize(self);
+  };
+
+  self.on('resize', function (event) {
+    if (event && event.data && event.data.repositionOnly) {
+      return;
+    }
+
+    if (!self.$playArea || !self.$playArea.length || !getPlayArea()) {
+      if (self.content) {
+        self.content.resize();
+      }
+      return;
+    }
+
+    if (!self.$playArea.is(':visible')) {
+      scheduleDeferredResize(self);
+      return;
+    }
+
+    if (spResizeRaf !== null) {
+      cancelAnimationFrame(spResizeRaf);
+    }
+
+    spResizeRaf = requestAnimationFrame(function () {
+      spResizeRaf = requestAnimationFrame(function () {
+        spResizeRaf = null;
+        applyPlayAreaScale(event);
+      });
+    });
   });
 
   self.registerDomElements = function () {
@@ -234,7 +267,7 @@ function SortParagraphsCFRD(params, contentId, extras) {
         $contextAside.append($('<div>', {
           id: contextTextId,
           class: 'h5p-sp-context-text',
-          html: context.text,
+          html: Util.stripInlineFontSize(context.text),
         }));
       }
 

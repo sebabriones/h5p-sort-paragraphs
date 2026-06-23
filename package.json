@@ -1,6 +1,6 @@
 {
   "name": "h5p-sort-paragraphs-cfrd",
-  "version": "1.1.4",
+  "version": "1.1.11",
   "description": "Sort the Paragraphs (CFRD) — fork upstream 0.11.16 sobre coreApi 1.28.",
   "private": true,
   "scripts": {

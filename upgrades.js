@@ -170,6 +170,55 @@ H5PUpgrades['H5P.SortParagraphsCFRD'] = (function () {
 
           finished(null, parameters);
         },
+
+        /**
+         * Drag Question-style scaling: unbounded scale, 16:9 height from JS.
+         */
+        5: function (parameters, finished) {
+          finished(null, parameters);
+        },
+
+        /**
+         * Fix play area height: aspect-ratio 16:9 in CSS, fontSize-only resize (MC pattern).
+         */
+        6: function (parameters, finished) {
+          finished(null, parameters);
+        },
+
+        /**
+         * Scale rich text with play area: em theme tokens, strip editor font-size, CSS anchors.
+         */
+        7: function (parameters, finished) {
+          finished(null, parameters);
+        },
+
+        /**
+         * CFRD: movement buttons always horizontal (no vertical stack on resize).
+         */
+        8: function (parameters, finished) {
+          finished(null, parameters);
+        },
+
+        /**
+         * Live resize: parent/iframe width measure, deferred apply, single play-area fontSize root.
+         */
+        9: function (parameters, finished) {
+          finished(null, parameters);
+        },
+
+        /**
+         * Fix PlayArea API lost when webpack bundle overwrote H5P.SortParagraphsCFRD namespace.
+         */
+        10: function (parameters, finished) {
+          finished(null, parameters);
+        },
+
+        /**
+         * Instructions padding (rem + scale), MAX_SCALE, movement buttons scale with --sp-scale.
+         */
+        11: function (parameters, finished) {
+          finished(null, parameters);
+        },
       },
     },
   };

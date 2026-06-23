@@ -6,13 +6,37 @@
 
 .h5p-sort-paragraphs-cfrd.h5p-sp-play-area {
   --sp-scale: 1;
+  --h5p-theme-spacing-xl: calc(3em * 0.8);
+  --h5p-theme-spacing-l: calc(2em * 0.8);
+  --h5p-theme-spacing-m: calc(1.5em * 0.8);
+  --h5p-theme-spacing-s: calc(1em * 0.8);
+  --h5p-theme-spacing-xs: calc(0.65em * 0.8);
+  --h5p-theme-spacing-xxs: calc(0.5em * 0.8);
+  --h5p-theme-font-size-xxl: 1.5em;
+  --h5p-theme-font-size-xl: 1.25em;
+  --h5p-theme-font-size-l: 1.125em;
+  --h5p-theme-font-size-m: 1em;
+  --h5p-theme-font-size-s: 0.85em;
+  --h5p-theme-border-radius-large: 0.5em;
+  --h5p-theme-border-radius-medium: 0.375em;
+  --h5p-theme-border-radius-small: 0.25em;
   position: relative;
   box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
   aspect-ratio: 16 / 9;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+.h5p-sp-play-area .h5p-question-content {
+  font-size: 1em;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .h5p-sp-play-area .h5p-question-main-content {
@@ -25,13 +49,6 @@
 
 .h5p-sp-play-area:has(.h5p-instructions-tab-root) .h5p-question-main-content {
   padding-top: calc(2.75rem * var(--sp-scale, 1));
-}
-
-.h5p-sp-play-area .h5p-question-content {
-  flex: 1 1 0;
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
 }
 
 .h5p-sp-play-area .h5p-question-content.h5p-sp-task-only {
@@ -89,18 +106,18 @@
   overflow-x: hidden;
 }
 
-.h5p-sp-context-text {
+.h5p-sp-play-area .h5p-sp-context-text {
   flex: 0 0 auto;
-  font-size: inherit;
+  font-size: 1em;
   line-height: 1.5;
   color: var(--h5p-theme-text-secondary);
 }
 
-.h5p-sp-context-text p {
+.h5p-sp-play-area .h5p-sp-context-text p {
   margin: 0 0 0.5em;
 }
 
-.h5p-sp-context-text p:last-child {
+.h5p-sp-play-area .h5p-sp-context-text p:last-child {
   margin-bottom: 0;
 }
 
@@ -138,10 +155,30 @@
   display: none;
 }
 
-.h5p-sp-play-area .h5p-sp-context-text,
-.h5p-sp-play-area .h5p-sp-context-text * {
-  font-size: inherit;
+.h5p-sp-play-area .h5p-sort-paragraphs-content,
+.h5p-sp-play-area .h5p-sort-paragraphs-list {
+  font-size: 1em;
+}
+
+.h5p-sp-play-area .h5p-sp-context-text :is(p, div, span, li, strong, em, code, pre, ul, ol),
+.h5p-sp-play-area .h5p-sort-paragraphs-paragraph-container :is(p, div, span, li, strong, em, code, pre, ul, ol) {
+  font-size: inherit !important;
   line-height: inherit;
+}
+
+.h5p-sp-play-area .h5p-sp-context-text :is(h2, h3),
+.h5p-sp-play-area .h5p-sort-paragraphs-paragraph-container :is(h2, h3) {
+  line-height: inherit;
+}
+
+.h5p-sp-play-area .h5p-sp-context-text h2,
+.h5p-sp-play-area .h5p-sort-paragraphs-paragraph-container h2 {
+  font-size: 1.25em !important;
+}
+
+.h5p-sp-play-area .h5p-sp-context-text h3,
+.h5p-sp-play-area .h5p-sort-paragraphs-paragraph-container h3 {
+  font-size: 1.125em !important;
 }
 
 .h5p-sp-play-area .h5p-sort-paragraphs-paragraph {
@@ -149,10 +186,40 @@
   line-height: 1.5;
 }
 
-.h5p-sp-play-area .h5p-sort-paragraphs-paragraph-container,
-.h5p-sp-play-area .h5p-sort-paragraphs-paragraph-container * {
-  font-size: inherit;
+.h5p-sp-play-area .h5p-sort-paragraphs-paragraph-container {
+  font-size: 1em;
   line-height: inherit;
+}
+
+.h5p-sp-play-area .h5p-sort-paragraphs-paragraph-button-container,
+.h5p-sp-play-area .h5p-sort-paragraphs-paragraph-container-left {
+  width: calc(3.25rem * var(--sp-scale, 1));
+}
+
+.h5p-sp-play-area .h5p-sort-paragraphs-paragraph-container-left {
+  padding: 0 calc(0.25rem * var(--sp-scale, 1));
+}
+
+.h5p-sp-play-area .h5p-sort-paragraphs-buttons-container .h5p-sort-paragraphs-paragraph-button-container {
+  padding: 0 calc(0.25rem * var(--sp-scale, 1));
+}
+
+.h5p-sp-play-area .h5p-sort-paragraphs-button {
+  font-family: inherit;
+  font-size: 1em;
+  line-height: 1;
+  width: calc(2.75rem * var(--sp-scale, 1));
+  height: calc(2.75rem * var(--sp-scale, 1));
+  background-size: calc(1.15rem * var(--sp-scale, 1)) calc(1.15rem * var(--sp-scale, 1));
+}
+
+.h5p-sp-play-area .h5p-sort-paragraphs-paragraph-container {
+  min-height: calc(2.75rem * var(--sp-scale, 1));
+}
+
+.h5p-sp-play-area .h5p-sort-paragraphs-paragraph-button-up::before,
+.h5p-sp-play-area .h5p-sort-paragraphs-paragraph-button-down::before {
+  font-size: calc(1.5rem * var(--sp-scale, 1));
 }
 
 .h5p-sort-paragraphs-cfrd .h5p-question-feedback.h5p-question-popup {
@@ -297,22 +364,10 @@
 
     .h5p-sort-paragraphs-buttons-container {
       display: flex;
+      flex-direction: row;
 
-      &:not(.vertical) {
-        flex-direction: row;
-
-        .h5p-sort-paragraphs-paragraph-button-container {
-          padding: 0 .25em;
-        }
-      }
-
-      &.vertical {
-        flex-direction: column;
-        justify-content: space-between;
-
-        .h5p-sort-paragraphs-paragraph-button-container {
-          padding: .25em 0;
-        }
+      .h5p-sort-paragraphs-paragraph-button-container {
+        padding: 0 0.25em;
       }
     }
   }

@@ -1100,21 +1100,11 @@ export default class SortParagraphsContent {
   }
 
   /**
-   * Resize.
+   * Resize — CFRD: keep movement buttons in a horizontal row (no vertical stack).
    */
   resize() {
-    let buttonsVertical;
-    if (this.viewState !== 'task') {
-      buttonsVertical = false;
-    }
-    else {
-      buttonsVertical = this.paragraphs.every((paragraph) => {
-        return paragraph.doButtonsFitVertically();
-      });
-    }
-
     this.paragraphs.forEach((paragraph) => {
-      paragraph.setButtonsVertical(buttonsVertical);
+      paragraph.setButtonsVertical(false);
     });
   }
 }

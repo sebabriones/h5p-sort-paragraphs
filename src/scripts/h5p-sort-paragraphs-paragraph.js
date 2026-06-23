@@ -91,7 +91,7 @@ export default class SortParagraphsParagraph {
     // Container for paragraph text
     this.containerText = this.buildDIVContainer({
       classText: 'h5p-sort-paragraphs-paragraph-container',
-      innerHTML: this.params.text,
+      innerHTML: Util.stripInlineFontSize(this.params.text),
     });
     paragraph.appendChild(this.containerText);
 
@@ -462,7 +462,7 @@ export default class SortParagraphsParagraph {
       return;
     }
 
-    this.containerText.innerHTML = text;
+    this.containerText.innerHTML = Util.stripInlineFontSize(text);
   }
 
   /**
@@ -717,36 +717,9 @@ export default class SortParagraphsParagraph {
   }
 
   /**
-   * Check whether buttons fit in vertically.
-   * @returns {boolean} True, if buttons fin in vertically, else false.
+   * CFRD: movement buttons always stay in a horizontal row.
    */
-  doButtonsFitVertically() {
-    if (this.content.clientHeight === 0 || !Object.keys(this.buttons).length) {
-      return false;
-    }
-
-    this.styleContent = this.styleContent || window.getComputedStyle(this.content);
-    const contentPadding = parseFloat(this.styleContent.getPropertyValue('padding-top')) +
-      parseFloat(this.styleContent.getPropertyValue('padding-bottom'));
-
-    const contentHeight = this.content.clientHeight - contentPadding;
-
-    // Assuming all buttons have the same size
-    const buttonHeight = Object.values(this.buttons)[0].getDOM().offsetHeight;
-
-    if (buttonHeight === 0) {
-      return false; // Buttons may not be visible at all
-    }
-
-    // eslint-disable-next-line no-magic-numbers
-    return contentHeight >= 2 * buttonHeight;
-  }
-
-  /**
-   * Set buttons vertical.
-   * @param {boolean} vertical If true, set vertical, else horizontal.
-   */
-  setButtonsVertical(vertical) {
-    this.buttonsContainer.classList.toggle('vertical', vertical);
+  setButtonsVertical() {
+    this.buttonsContainer.classList.remove('vertical');
   }
 }
