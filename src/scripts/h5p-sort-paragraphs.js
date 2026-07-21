@@ -3,6 +3,13 @@ import Util from './h5p-sort-paragraphs-util.js';
 import {
   normalizeCfrdParams,
   getInstructionsOptions,
+  scheduleInstructionsAttach,
+  scheduleDeferredResize,
+  scheduleContextImageAttach,
+  refreshInstructionsScale,
+  getContextLayoutClass,
+  hasContextText,
+  hasContextImage,
   stripHtmlText,
 } from './sort-paragraphs-cfrd-helpers.js';
 
@@ -10,7 +17,7 @@ const VIEW_STATES = { task: 0, results: 1, solutions: 2 };
 const DEFAULT_DESCRIPTION = 'SortParagraphs';
 
 /**
- * Sort Paragraphs CFRD 1.0 — H5P.QuestionCFRD (etapa 1+2: player + semantics CFRD).
+ * Sort Paragraphs CFRD 1.0 — H5P.QuestionCFRD (etapa 3: instructions + contexto).
  * @param {object} params
  * @param {number} contentId
  * @param {object} [extras]
@@ -109,7 +116,7 @@ function SortParagraphsCFRD(params, contentId, extras) {
 
   const instructionsPlain = getInstructionsOptions(self) ?
     stripHtmlText(self.params.instructions.text) :
-    stripHtmlText(self.params.taskDescription || '');
+    '';
 
   self.content = new SortParagraphsContent(
     {
@@ -119,7 +126,6 @@ function SortParagraphsCFRD(params, contentId, extras) {
       penalties: self.params.behaviour.applyPenalties,
       scoringMode: self.params.behaviour.scoringMode,
       showScorePoints: self.params.behaviour.showScorePoints === true,
-      taskDescription: instructionsPlain,
       listLabelPrefix: instructionsPlain,
       previousState: self.previousState,
       a11y: self.params.a11y,
@@ -139,6 +145,24 @@ function SortParagraphsCFRD(params, contentId, extras) {
       },
     },
   );
+
+  const originalAttach = self.attach;
+  self.attach = function ($container) {
+    self.$container = $container;
+    originalAttach.call(self, $container);
+    self.$playArea = $container.addClass('h5p-sp-play-area');
+    scheduleContextImageAttach(self);
+    scheduleInstructionsAttach(self, self.$playArea);
+    scheduleDeferredResize(self);
+  };
+
+  self.on('resize', () => {
+    refreshInstructionsScale(self);
+
+    if (self.content) {
+      self.content.resize();
+    }
+  });
 }
 
 SortParagraphsCFRD.prototype = Object.create(H5P.QuestionCFRD.prototype);
@@ -148,50 +172,58 @@ SortParagraphsCFRD.DEFAULT_DESCRIPTION = DEFAULT_DESCRIPTION;
 
 SortParagraphsCFRD.prototype.registerDomElements = function () {
   const self = this;
-  const media = self.params.media && self.params.media.type;
-  const instructions = getInstructionsOptions(self);
+  const $ = H5P.jQuery;
+  const context = self.params.context;
+  const contextLayoutClass = getContextLayoutClass(context);
+  const contextTextId = 'sort-paragraphs-' + self.contentId + '-context';
+  const $listDom = $(self.content.getDOM());
+  let $contextMedia;
 
-  if (media && media.library) {
-    const type = media.library.split(' ')[0];
+  if (contextLayoutClass) {
+    const $layout = $('<div>', { class: 'h5p-sp-slide-layout' });
+    const $contextAside = $('<aside>', {
+      class: 'h5p-sp-context',
+      'aria-label': 'Context',
+    });
+    const $taskColumn = $('<div>', { class: 'h5p-sp-task-column' });
 
-    if (type === 'H5P.Image') {
-      if (media.params.file) {
-        self.setImage(media.params.file.path, {
-          disableImageZooming: self.params.media.disableImageZooming,
-          alt: media.params.alt,
-          title: media.params.title,
-          expandImage: media.params.expandImage,
-          minimizeImage: media.params.minimizeImage,
-        });
-      }
+    if (hasContextText(context)) {
+      $contextAside.append($('<div>', {
+        id: contextTextId,
+        class: 'h5p-sp-context-text',
+        html: Util.stripInlineFontSize(context.text),
+      }));
     }
-    else if (type === 'H5P.Video') {
-      if (media.params.sources) {
-        self.setVideo(media);
-      }
+
+    if (hasContextImage(context)) {
+      $contextMedia = $('<div>', { class: 'h5p-sp-context-media' });
+      $contextAside.append($contextMedia);
     }
-    else if (type === 'H5P.Audio') {
-      if (media.params.files) {
-        self.setAudio(media);
-      }
+
+    $taskColumn.append($listDom);
+    $layout.append($contextAside);
+    $layout.append($taskColumn);
+
+    self.setContent($('<div>', {
+      class: 'h5p-sp-has-context ' + contextLayoutClass,
+    }).append($layout), {
+      class: 'h5p-sp-with-context',
+    });
+
+    if ($contextMedia && $contextMedia.length) {
+      self.pendingContextImage = {
+        context: context,
+        $container: $contextMedia,
+      };
     }
   }
-
-  if (instructions && instructions.text) {
-    const introduction = document.createElement('div');
-    introduction.classList.add('h5p-sort-paragraphs-task-description');
-    introduction.innerHTML = instructions.text;
-    self.setIntroduction(introduction);
-  }
-  else if (self.params.taskDescription) {
-    const introduction = document.createElement('div');
-    introduction.classList.add('h5p-sort-paragraphs-task-description');
-    introduction.innerHTML = self.params.taskDescription;
-    self.setIntroduction(introduction);
+  else {
+    self.setContent($listDom, {
+      class: 'h5p-sp-task-only',
+    });
   }
 
   self.setViewState('task');
-  self.setContent(self.content.getDOM());
 
   self.previousState = self.previousState ?? {};
   if (
@@ -218,11 +250,6 @@ SortParagraphsCFRD.prototype.registerDomElements = function () {
   }
 
   self.addButtons();
-
-  self.on('resize', () => {
-    self.content.resize();
-  });
-
   self.trigger('resize');
 };
 
@@ -444,7 +471,7 @@ SortParagraphsCFRD.prototype.getDescription = function () {
   if (instructions) {
     return instructions.text;
   }
-  return this.params.taskDescription || DEFAULT_DESCRIPTION;
+  return DEFAULT_DESCRIPTION;
 };
 
 SortParagraphsCFRD.prototype.getCurrentState = function () {

@@ -5,14 +5,14 @@ Fork CFRD de **H5P.SortParagraphs** (upstream 0.11.16, `coreApi` 1.23, Lumi).
 | Campo | Valor |
 |-------|-------|
 | `machineName` | `H5P.SortParagraphsCFRD` |
-| Versión actual | **1.0.2** |
+| Versión actual | **1.0.3** |
 | Constructor JS | `H5P.SortParagraphsCFRD` |
 | Editor | `semantics.json` + widgets upstream — sin editor dedicado |
 | Rama git | `sort-paragraphs-cfrd-1.0.0` |
 
-## Estado (1.0.2)
+## Estado (1.0.3)
 
-Etapa 2 — semantics CFRD (`instructions`, `context`, `UI`, `appearance`, `showScorePoints`) y `upgrades.js` para migrar contenido legacy. El player normaliza parámetros CFRD; layout instructions/contexto/play area pendiente (etapas 3+).
+Etapa 3 — `H5P.Instructions.attach` (intro/pestaña) y layout de contexto (texto + imagen en columna lateral). Pendiente: play area 16:9, popup de feedback y apariencia por actividad (etapas 4+).
 
 Referencia de portación: `../h5p-sort-paragraphs-cfrd-1.1/` y `dev/multi-choice-cfrd/h5p-multi-choice-cfrd-1.0/`.
 

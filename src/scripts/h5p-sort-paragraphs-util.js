@@ -45,6 +45,31 @@ class Util {
   }
 
   /**
+   * Remove inline font-size/line-height so play-area scaling controls typography.
+   * @param {string} html
+   * @returns {string}
+   */
+  static stripInlineFontSize(html) {
+    if (!html || typeof html !== 'string') {
+      return html;
+    }
+
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const styled = doc.body.querySelectorAll('[style]');
+
+    styled.forEach((element) => {
+      element.style.removeProperty('font-size');
+      element.style.removeProperty('line-height');
+
+      if (!element.getAttribute('style')?.trim()) {
+        element.removeAttribute('style');
+      }
+    });
+
+    return doc.body.innerHTML;
+  }
+
+  /**
    * Create empty array of arbitrary dimension.
    * @param {number} length Array length.
    * @returns {object[]} Array.

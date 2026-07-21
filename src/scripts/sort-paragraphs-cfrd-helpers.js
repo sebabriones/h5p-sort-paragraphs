@@ -53,9 +53,11 @@ export function scheduleInstructionsAttach(instance, $fallbackContainer) {
       const instructions = getInstructionsOptions(instance);
       const $target = (instance.$playArea && instance.$playArea.length) ?
         instance.$playArea :
-        ((instance.$container && instance.$container.length) ?
-          instance.$container :
-          $fallbackContainer);
+        ((instance.$instructionsTarget && instance.$instructionsTarget.length) ?
+          instance.$instructionsTarget :
+          ((instance.$container && instance.$container.length) ?
+            instance.$container :
+            $fallbackContainer));
       let attached;
 
       if (!instructions || !$target || !$target.length) {
@@ -179,6 +181,32 @@ export function attachContextImage(context, contentId, $container) {
   }
 
   H5P.newRunnable(library, contentId, $container);
+}
+
+/**
+ * Attach context image after the play area is in the DOM.
+ * @param {object} instance
+ */
+export function scheduleContextImageAttach(instance) {
+  const pending = instance.pendingContextImage;
+
+  if (!pending || !pending.$container || !pending.$container.length) {
+    return;
+  }
+
+  [0, 50, 200].forEach((delay) => {
+    setTimeout(() => {
+      if (!pending.$container || !pending.$container.length) {
+        return;
+      }
+
+      if (pending.$container.children().length) {
+        return;
+      }
+
+      attachContextImage(pending.context, instance.contentId, pending.$container);
+    }, delay);
+  });
 }
 
 /**
