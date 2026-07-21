@@ -156,6 +156,12 @@ function SortParagraphsCFRD(params, contentId, extras) {
   self.playAreaSize = PlayArea ? PlayArea.getDesignSize() : null;
   let spResizeRaf = null;
 
+  const clearPlayAreaScaleCache = function () {
+    self._spLastScaleKey = null;
+    self._spLastMaxHeight = null;
+    self._spLastWidth = null;
+  };
+
   const applyPlayAreaScale = function (event) {
     const playAreaApi = getPlayArea();
     const design = self.playAreaSize || (playAreaApi ? playAreaApi.getDesignSize() : null);
@@ -171,15 +177,33 @@ function SortParagraphsCFRD(params, contentId, extras) {
       width = design.baseWidth;
     }
 
-    const scale = playAreaApi.getScale(width);
-    const fontSize = playAreaApi.getScaledFontSize(width) + 'px';
+    // Height cap only in fullscreen — normal view must not fight iframe auto-height.
+    const maxHeightPx = playAreaApi.getPlayAreaMaxHeight(playAreaEl, width);
+    const heightForScale = maxHeightPx > 0 ? maxHeightPx : 0;
+    const scale = playAreaApi.getScale(width, heightForScale);
+    const fontSize = playAreaApi.getScaledFontSize(width, heightForScale) + 'px';
+    const scaleKey = scale.toFixed(4);
+    const maxHeightCss = maxHeightPx > 0 ? (Math.round(maxHeightPx) + 'px') : '';
+
+    if (
+      self._spLastScaleKey === scaleKey &&
+      self._spLastMaxHeight === maxHeightCss &&
+      self._spLastWidth === width
+    ) {
+      return;
+    }
+
+    self._spLastScaleKey = scaleKey;
+    self._spLastMaxHeight = maxHeightCss;
+    self._spLastWidth = width;
 
     self.$playArea.css({
       width: '100%',
       maxWidth: '100%',
       height: '',
+      maxHeight: maxHeightCss || 'none',
       fontSize: fontSize,
-      '--sp-scale': scale.toFixed(4),
+      '--sp-scale': scaleKey,
     });
 
     self.$playArea
@@ -230,6 +254,7 @@ function SortParagraphsCFRD(params, contentId, extras) {
     scheduleContextImageAttach(self);
     scheduleInstructionsAttach(self, self.$playArea);
 
+    // Observe parent only — observing the play area while applying max-height loops.
     if (window.ResizeObserver && !self.playAreaResizeObserver && self.$playArea.length) {
       self.playAreaResizeObserver = new ResizeObserver(function () {
         self.trigger('resize');
@@ -238,12 +263,24 @@ function SortParagraphsCFRD(params, contentId, extras) {
       if (parentEl) {
         self.playAreaResizeObserver.observe(parentEl);
       }
-      self.playAreaResizeObserver.observe(self.$playArea[0]);
     }
 
     scheduleDeferredResize(self);
     applyActivityAppearance(self);
   };
+
+  self.on('enterFullScreen', function () {
+    clearPlayAreaScaleCache();
+    self.trigger('resize');
+  });
+
+  self.on('exitFullScreen', function () {
+    clearPlayAreaScaleCache();
+    if (self.$playArea && self.$playArea.length) {
+      self.$playArea.css('maxHeight', 'none');
+    }
+    self.trigger('resize');
+  });
 
   self.on('resize', function (event) {
     if (event && event.data && event.data.repositionOnly) {
