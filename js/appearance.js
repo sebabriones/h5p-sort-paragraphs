@@ -10,12 +10,26 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
     paragraphBackground: '#dddddd',
     paragraphHoverBackground: '#ececec',
     paragraphText: '#333333',
-    paragraphBorderRadius: 0.375,
+    paragraphBorderRadius: 0.37,
     contextText: '#555555',
     correctBackground: '#b6e4ce',
     correctText: '#255c41',
     wrongBackground: '#fbd7d8',
     wrongText: '#b71c1c',
+    dropBackground: '#c7ceff',
+    dropBorderColor: '#042cff',
+    dropBorderStyle: 'dashed',
+    dropBorderWidth: 0.25,
+    activeBackground: '#e9edfe',
+    activeTextColor: '#3d4eff',
+    activeBorderColor: '#0825ff',
+    activeBoxShadow: '#b1c5e0',
+    moveButtonBackground: '#ffffff',
+    moveButtonText: '#1a73d9',
+    moveButtonHoverBackground: '#f2f8fd',
+    moveButtonActiveBackground: '#e6f1fa',
+    moveButtonDisabledBackground: '#dddddd',
+    moveButtonDisabledText: '#606060',
     feedbackBackground: '#ffffff',
     feedbackTextColor: '#333333'
   };
@@ -30,12 +44,26 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
     correctText: '--sp-correct-color',
     wrongBackground: '--sp-wrong-bg',
     wrongText: '--sp-wrong-color',
+    dropBackground: '--sp-drop-bg',
+    dropBorderColor: '--sp-drop-border-color',
+    dropBorderStyle: '--sp-drop-border-style',
+    activeBackground: '--sp-active-bg',
+    activeTextColor: '--sp-active-color',
+    activeBorderColor: '--sp-active-border-color',
+    activeBoxShadow: '--sp-active-box-shadow',
+    moveButtonBackground: '--sp-move-btn-bg',
+    moveButtonText: '--sp-move-btn-color',
+    moveButtonHoverBackground: '--sp-move-btn-hover-bg',
+    moveButtonActiveBackground: '--sp-move-btn-active-bg',
+    moveButtonDisabledBackground: '--sp-move-btn-disabled-bg',
+    moveButtonDisabledText: '--sp-move-btn-disabled-color',
     feedbackBackground: '--sp-feedback-bg',
     feedbackTextColor: '--sp-feedback-color'
   };
 
   var CSS_EM_VAR_KEYS = {
-    paragraphBorderRadius: '--sp-paragraph-border-radius'
+    paragraphBorderRadius: '--sp-paragraph-border-radius',
+    dropBorderWidth: '--sp-drop-border-width'
   };
 
   /**
@@ -82,6 +110,8 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
     var text = (appearance && appearance.textColors) || {};
     var correct = (appearance && appearance.correctColors) || {};
     var wrong = (appearance && appearance.wrongColors) || {};
+    var interaction = (appearance && appearance.paragraphInteraction) || {};
+    var movementButtons = (appearance && appearance.movementButtons) || {};
 
     return {
       playAreaBackground: appearance && appearance.playAreaBackground,
@@ -93,7 +123,20 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
       correctBackground: correct.background,
       correctText: correct.text,
       wrongBackground: wrong.background,
-      wrongText: wrong.text
+      wrongText: wrong.text,
+      dropBackground: interaction.background,
+      dropBorderColor: interaction.borderColor,
+      dropBorderStyle: interaction.borderStyle,
+      dropBorderWidth: interaction.borderWidth,
+      activeBackground: interaction.activeBackground,
+      activeTextColor: interaction.activeTextColor,
+      activeBorderColor: interaction.activeBorderColor,
+      moveButtonBackground: movementButtons.background,
+      moveButtonText: movementButtons.text,
+      moveButtonHoverBackground: movementButtons.hoverBackground,
+      moveButtonActiveBackground: movementButtons.activeBackground,
+      moveButtonDisabledBackground: movementButtons.disabledBackground,
+      moveButtonDisabledText: movementButtons.disabledText
     };
   }
 

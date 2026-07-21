@@ -51,7 +51,7 @@ function SortParagraphsCFRD(params, contentId, extras) {
     appearance: {},
     behaviour: {
       duplicatesInterchangeable: true,
-      enableSolutionsButton: true,
+      enableSolutionsButton: false,
       enableRetry: true,
       scoringMode: 'positions',
       applyPenalties: true,
@@ -212,8 +212,10 @@ function SortParagraphsCFRD(params, contentId, extras) {
         content !== undefined &&
         String(content).trim().length > 0;
 
-      if (self.$container && self.$container.length && !isPopup) {
-        scheduleInlineEvaluationLayout(self.$container, self);
+      if (self.$container && self.$container.length) {
+        scheduleInlineEvaluationLayout(self.$container, self, {
+          normalizeInline: !isPopup,
+        });
       }
 
       return result;

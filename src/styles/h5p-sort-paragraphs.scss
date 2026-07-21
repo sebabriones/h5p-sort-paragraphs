@@ -8,12 +8,26 @@
   --sp-paragraph-bg: #dddddd;
   --sp-paragraph-hover-bg: #ececec;
   --sp-paragraph-color: #333333;
-  --sp-paragraph-border-radius: 0.375em;
+  --sp-paragraph-border-radius: 0.37em;
   --sp-context-color: #555555;
   --sp-correct-bg: #b6e4ce;
   --sp-correct-color: #255c41;
   --sp-wrong-bg: #fbd7d8;
   --sp-wrong-color: #b71c1c;
+  --sp-drop-bg: #c7ceff;
+  --sp-drop-border-color: #042cff;
+  --sp-drop-border-style: dashed;
+  --sp-drop-border-width: 0.25em;
+  --sp-active-bg: #e9edfe;
+  --sp-active-color: #3d4eff;
+  --sp-active-border-color: #0825ff;
+  --sp-active-box-shadow: #b1c5e0;
+  --sp-move-btn-bg: #ffffff;
+  --sp-move-btn-color: #1a73d9;
+  --sp-move-btn-hover-bg: #f2f8fd;
+  --sp-move-btn-active-bg: #e6f1fa;
+  --sp-move-btn-disabled-bg: #dddddd;
+  --sp-move-btn-disabled-color: #606060;
   --sp-feedback-bg: #ffffff;
   --sp-feedback-color: #333333;
   position: relative;
@@ -26,6 +40,8 @@
   flex-direction: column;
   overflow: hidden;
   padding: 1em;
+  padding-top: 1.5em;
+  margin-bottom: 1em;
   background-color: transparent;
 }
 
@@ -233,10 +249,92 @@
   font-size: calc(1.5rem * var(--sp-scale, 1));
 }
 
+/* Keep hidden action buttons out of the footer flex/float layout */
+.h5p-sort-paragraphs-cfrd .h5p-question-buttons .h5p-joubelui-button.h5p-question-button-hidden {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+.h5p-sort-paragraphs-cfrd > .h5p-question-buttons,
+.h5p-sort-paragraphs-cfrd > .h5p-question-scorebar,
+.h5p-sort-paragraphs-cfrd > .h5p-question-feedback:not(.h5p-question-popup) {
+  background-color: transparent;
+}
+
+/* Inline feedback is unused when overall feedback uses the popup */
+.h5p-sort-paragraphs-cfrd > .h5p-question-feedback:not(.h5p-question-popup) {
+  display: none !important;
+  max-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+  border: 0 !important;
+}
+
+/* Action buttons: fill available width so QuestionCFRD resizeButtons does not
+   shrink-wrap and truncate labels to icons (e.g. "Intentar de nuevo"). */
+.h5p-sort-paragraphs-cfrd > .h5p-question-buttons.h5p-question-visible,
+.h5p-sort-paragraphs-cfrd > .h5p-question-buttons.has-scorebar,
+.h5p-sort-paragraphs-cfrd > .h5p-question-buttons.has-scorebar.wrap {
+  box-sizing: border-box;
+  float: none;
+  clear: both;
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.25em;
+  width: 100% !important;
+  max-width: 100%;
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 1em;
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+.h5p-sort-paragraphs-cfrd > .h5p-question-buttons .h5p-joubelui-button:not(.h5p-question-button-hidden) {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.h5p-no-frame > .h5p-question.h5p-sort-paragraphs-cfrd > .h5p-question-buttons.h5p-question-visible {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-bottom: 1em;
+}
+
+.h5p-no-frame > .h5p-question.h5p-sort-paragraphs-cfrd > .h5p-question-scorebar.h5p-question-visible {
+  margin-left: 1em !important;
+  margin-bottom: 1em;
+}
+
+.h5p-no-frame > .h5p-question.h5p-sort-paragraphs-cfrd > .h5p-question-feedback:not(.h5p-question-popup).h5p-question-visible {
+  margin-left: 1em !important;
+  margin-right: 1em !important;
+}
+
+.h5p-no-frame > .h5p-question.h5p-sort-paragraphs-cfrd:has(> .h5p-question-scorebar.h5p-question-visible) > .h5p-question-scorebar.h5p-question-visible,
+.h5p-no-frame > .h5p-question.h5p-sort-paragraphs-cfrd:has(> .h5p-question-scorebar.h5p-question-visible) > .h5p-question-scorebar.h5p-question-visible.full-width {
+  margin: 0 0 1em 1em !important;
+}
+
+.h5p-no-frame > .h5p-question.h5p-sort-paragraphs-cfrd:has(> .h5p-question-scorebar.h5p-question-visible) > .h5p-question-buttons.h5p-question-visible,
+.h5p-no-frame > .h5p-question.h5p-sort-paragraphs-cfrd:has(> .h5p-question-scorebar.h5p-question-visible) > .h5p-question-buttons.has-scorebar,
+.h5p-no-frame > .h5p-question.h5p-sort-paragraphs-cfrd:has(> .h5p-question-scorebar.h5p-question-visible) > .h5p-question-buttons.has-scorebar.wrap {
+  margin: 0 0 1em 0 !important;
+  padding-right: 1em;
+}
+
 /* Inline evaluation footer: only when scorebar is a direct child (no popup) */
 .h5p-sort-paragraphs-cfrd:has(> .h5p-question-scorebar.h5p-question-visible) {
   display: grid;
-  grid-template-columns: 13em minmax(0, 1fr);
+  grid-template-columns: 13em minmax(max-content, 1fr);
   align-items: center;
   column-gap: 0.5em;
 }
@@ -258,10 +356,16 @@
   font-size: 1em;
 }
 
-.h5p-sort-paragraphs-cfrd:has(> .h5p-question-scorebar.h5p-question-visible) > .h5p-question-buttons.h5p-question-visible {
+.h5p-sort-paragraphs-cfrd:has(> .h5p-question-scorebar.h5p-question-visible) > .h5p-question-buttons.h5p-question-visible,
+.h5p-sort-paragraphs-cfrd:has(> .h5p-question-scorebar.h5p-question-visible) > .h5p-question-buttons.has-scorebar,
+.h5p-sort-paragraphs-cfrd:has(> .h5p-question-scorebar.h5p-question-visible) > .h5p-question-buttons.has-scorebar.wrap {
   grid-column: 2;
-  float: none;
-  margin: 0 1em 1em 0;
+  justify-self: stretch;
+  width: 100% !important;
+  max-width: 100%;
+  margin: 0 0 1em 0;
+  padding-left: 0.5em;
+  padding-right: 1em;
 }
 
 .h5p-sort-paragraphs-cfrd .h5p-question-feedback.h5p-question-popup {
@@ -287,7 +391,7 @@
   max-height: min(50vh, 60%);
 }
 
-.h5p-sort-paragraphs {
+.h5p-sort-paragraphs-cfrd {
   .h5p-sort-paragraphs-paragraph-button-container {
     display: flex;
     flex-direction: row;
@@ -297,13 +401,13 @@
   }
 
   .h5p-sort-paragraphs-paragraph {
-    background-color: var(--sp-paragraph-bg, #{main.$color-enabled});
+    background-color: var(--sp-paragraph-bg);
     border-color: transparent;
-    border-radius: var(--sp-paragraph-border-radius, .3em);
+    border-radius: var(--sp-paragraph-border-radius);
     border-style: solid;
     border-width: .25em;
     box-shadow: 0 0.1em 0 main.$color-box-shadow-regular;
-    color: var(--sp-paragraph-color, inherit);
+    color: var(--sp-paragraph-color);
     cursor: move;
     display: flex;
     flex-direction: row;
@@ -338,11 +442,17 @@
       margin-bottom: 0;
     }
 
+    &:not(.h5p-sort-paragraphs-disabled):not(.h5p-sort-paragraphs-correct):not(.h5p-sort-paragraphs-wrong):hover {
+      background-color: var(--sp-paragraph-hover-bg);
+    }
+
     &.h5p-sort-paragraphs-over, &.h5p-sort-paragraphs-selected {
-      background: var(--sp-paragraph-hover-bg, #{main.$color-over});
-      border-color: #0825ff;
-      box-shadow: 0 0.1em 0 #b1c5e0;
-      color: var(--sp-paragraph-color, #{main.$color-over-text});
+      background: var(--sp-active-bg);
+      border-color: var(--sp-active-border-color);
+      border-style: solid;
+      border-width: var(--sp-drop-border-width);
+      box-shadow: 0 0.1em 0 var(--sp-active-box-shadow);
+      color: var(--sp-active-color);
     }
 
     .h5p-sort-paragraphs-paragraph-corrections {
@@ -351,14 +461,13 @@
     }
 
     &.h5p-sort-paragraphs-correct {
-      background: var(--sp-correct-bg, #{main.$color-correct-light});
-      border-color: var(--sp-correct-bg, #{main.$color-correct-light});
+      background: var(--sp-correct-bg);
+      border-color: var(--sp-correct-bg);
       box-shadow: 0 0.1em 0 main.$color-correct-box-shadow;
-      color: var(--sp-correct-color, #{main.$color-correct-dark});
+      color: var(--sp-correct-color);
 
       .h5p-sort-paragraphs-paragraph-corrections::before {
         content: main.$icon-correct;
-        color: var(--sp-correct-color, #{main.$color-correct-dark});
         font-family: 'H5PFontAwesome4', sans-serif;
       }
 
@@ -368,14 +477,13 @@
     }
 
     &.h5p-sort-paragraphs-wrong {
-      background: var(--sp-wrong-bg, #{main.$color-wrong-light});
-      border-color: var(--sp-wrong-bg, #{main.$color-wrong-light});
+      background: var(--sp-wrong-bg);
+      border-color: var(--sp-wrong-bg);
       box-shadow: 0 0.1em 0 main.$color-wrong-box-shadow;
-      color: var(--sp-wrong-color, #{main.$color-wrong-dark});
+      color: var(--sp-wrong-color);
 
       .h5p-sort-paragraphs-paragraph-corrections::before {
         content: main.$icon-wrong;
-        color: var(--sp-wrong-color, #{main.$color-wrong-dark});
         font-family: 'H5PFontAwesome4', sans-serif;
       }
 
@@ -435,14 +543,14 @@
 
   .h5p-sort-paragraphs-button {
     align-items: center;
-    background-color: main.$color-button;
+    background-color: var(--sp-move-btn-bg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: 1.15em 1.15em;
     border: 2px solid transparent;
     border-radius: 0.3em;
     box-shadow: 0 0.1em 0 main.$color-box-shadow-regular;
-    color: main.$color-button-text;
+    color: var(--sp-move-btn-color);
     cursor: pointer;
     display: flex;
     flex-shrink: 0;
@@ -458,20 +566,18 @@
     }
 
     &.h5p-sort-paragraphs-disabled {
-      background-color: main.$color-button-disabled;
-
-      /* Originally #eeeeee as in many H5P contents */
-      color: main.$color-button-disabled-text;
+      background-color: var(--sp-move-btn-disabled-bg);
+      color: var(--sp-move-btn-disabled-color);
       cursor: auto;
     }
 
     &:not(.h5p-sort-paragraphs-disabled) {
       &:hover {
-        background-color: main.$color-hover;
+        background-color: var(--sp-move-btn-hover-bg);
       }
 
       &:active {
-        background-color: main.$color-active;
+        background-color: var(--sp-move-btn-active-bg);
       }
     }
   }
@@ -531,14 +637,14 @@
     }
 
     &.h5p-sort-paragraphs-correct {
-      background: var(--sp-correct-bg, #{main.$color-correct-dark});
-      border-color: var(--sp-correct-bg, #{main.$color-correct-light});
+      background: main.$color-correct-dark;
+      border-color: main.$color-correct-light;
       box-shadow: 0 0.1em 0 main.$color-correct-box-shadow;
     }
 
     &.h5p-sort-paragraphs-wrong {
-      background: var(--sp-wrong-bg, #{main.$color-wrong-dark});
-      border-color: var(--sp-wrong-bg, #{main.$color-wrong-light});
+      background: main.$color-wrong-dark;
+      border-color: main.$color-wrong-light;
       box-shadow: 0 0.1em 0 main.$color-wrong-box-shadow;
     }
 
@@ -552,15 +658,15 @@
   }
 
   .h5p-sort-paragraphs-paragraph-placeholder {
-    background-color: #c7ceff;
-    border: .25em dashed #042cff;
-    border-radius: .3em;
+    background-color: var(--sp-drop-bg);
+    border: var(--sp-drop-border-width) var(--sp-drop-border-style) var(--sp-drop-border-color);
+    border-radius: var(--sp-paragraph-border-radius);
     box-sizing: border-box;
   }
 }
 
 // Firefox would show focus on clicking a disabled paragraph
-.h5p-content:not(.using-mouse) .h5p-sort-paragraphs {
+.h5p-content:not(.using-mouse) .h5p-sort-paragraphs-cfrd {
   .h5p-sort-paragraphs-paragraph.h5p-sort-paragraphs-disabled:focus {
     border-color: main.$color-disabled-focus;
     box-shadow: 0 0 .5em 0 main.$color-disabled-focus;

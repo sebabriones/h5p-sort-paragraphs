@@ -50,6 +50,230 @@
               "description": "Extra offset (in px) applied when the tab is closed. 0 keeps it flush; higher values hide it more."
             }
           ]
+        },
+        {
+          "label": "Instructions appearance",
+          "fields": [
+            {
+              "label": "Intro window",
+              "fields": [
+                {
+                  "label": "Use gradient background",
+                  "default": false
+                },
+                {
+                  "label": "Intro background color",
+                  "default": "#f5f5f5"
+                },
+                {
+                  "label": "Gradient background",
+                  "fields": [
+                    {
+                      "label": "Gradient angle",
+                      "description": "Direction in degrees (0 = upward, 180 = downward).",
+                      "default": 180
+                    },
+                    {
+                      "label": "Gradient start color",
+                      "default": "#f5f5f5"
+                    },
+                    {
+                      "label": "Gradient end color",
+                      "default": "#f5f5f5"
+                    }
+                  ]
+                },
+                {
+                  "label": "Intro text color",
+                  "default": "#333333"
+                },
+                {
+                  "label": "Start button",
+                  "fields": [
+                    {
+                      "label": "Use gradient background",
+                      "default": false
+                    },
+                    {
+                      "label": "Button background color",
+                      "default": "#1a73d9"
+                    },
+                    {
+                      "label": "Gradient background",
+                      "fields": [
+                        {
+                          "label": "Gradient angle",
+                          "description": "Direction in degrees (0 = upward, 180 = downward).",
+                          "default": 180
+                        },
+                        {
+                          "label": "Gradient start color",
+                          "default": "#1a73d9"
+                        },
+                        {
+                          "label": "Gradient end color",
+                          "default": "#1a73d9"
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Button text color",
+                      "default": "#ffffff"
+                    },
+                    {
+                      "label": "Button hover background color",
+                      "default": "#1356a3"
+                    },
+                    {
+                      "label": "Button hover text color",
+                      "default": "#ffffff"
+                    },
+                    {
+                      "label": "Use button border",
+                      "default": false
+                    },
+                    {
+                      "label": "Border settings",
+                      "fields": [
+                        {
+                          "label": "Button border color",
+                          "default": "#1a73d9"
+                        },
+                        {
+                          "label": "Button hover border color",
+                          "default": "#1356a3"
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Button border radius",
+                      "description": "Corner roundness in rem units.",
+                      "default": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "label": "Instructions tab",
+              "fields": [
+                {
+                  "label": "Use gradient background",
+                  "default": false
+                },
+                {
+                  "label": "Tab background color",
+                  "default": "#f5f5f5"
+                },
+                {
+                  "label": "Gradient background",
+                  "fields": [
+                    {
+                      "label": "Gradient angle",
+                      "description": "Direction in degrees (0 = upward, 180 = downward).",
+                      "default": 180
+                    },
+                    {
+                      "label": "Gradient start color",
+                      "default": "#f5f5f5"
+                    },
+                    {
+                      "label": "Gradient end color",
+                      "default": "#f5f5f5"
+                    }
+                  ]
+                },
+                {
+                  "label": "Tab text color",
+                  "default": "#333333"
+                },
+                {
+                  "label": "Tab content border color",
+                  "default": "#dbe2e8"
+                },
+                {
+                  "label": "Tab button position",
+                  "default": "left",
+                  "options": [
+                    {
+                      "label": "Left"
+                    },
+                    {
+                      "label": "Center"
+                    },
+                    {
+                      "label": "Right"
+                    }
+                  ]
+                },
+                {
+                  "label": "Tab button",
+                  "fields": [
+                    {
+                      "label": "Use gradient background",
+                      "default": false
+                    },
+                    {
+                      "label": "Button background color",
+                      "default": "#1a73d9"
+                    },
+                    {
+                      "label": "Gradient background",
+                      "fields": [
+                        {
+                          "label": "Gradient angle",
+                          "description": "Direction in degrees (0 = upward, 180 = downward).",
+                          "default": 180
+                        },
+                        {
+                          "label": "Gradient start color",
+                          "default": "#1a73d9"
+                        },
+                        {
+                          "label": "Gradient end color",
+                          "default": "#1a73d9"
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Button text color",
+                      "default": "#ffffff"
+                    },
+                    {
+                      "label": "Button hover background color",
+                      "default": "#1356a3"
+                    },
+                    {
+                      "label": "Button hover text color",
+                      "default": "#ffffff"
+                    },
+                    {
+                      "label": "Use button border",
+                      "default": false
+                    },
+                    {
+                      "label": "Border settings",
+                      "fields": [
+                        {
+                          "label": "Button border color",
+                          "default": "#1a73d9"
+                        },
+                        {
+                          "label": "Button hover border color",
+                          "default": "#1356a3"
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Button border radius",
+                      "description": "Corner roundness in rem units.",
+                      "default": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -241,6 +465,124 @@
             },
             {
               "label": "Wrong paragraph text color"
+            }
+          ]
+        },
+        {
+          "label": "Drop target (while reordering)",
+          "description": "Colors and border for the placeholder and the highlighted drop position while moving paragraphs.",
+          "fields": [
+            {
+              "label": "Drop target background color"
+            },
+            {
+              "label": "Active paragraph background color",
+              "description": "Background when a paragraph is selected or hovered as drop target."
+            },
+            {
+              "label": "Active paragraph text color"
+            },
+            {
+              "label": "Drop target border color"
+            },
+            {
+              "label": "Active paragraph border color"
+            },
+            {
+              "label": "Border style",
+              "options": [
+                {
+                  "label": "Dashed"
+                },
+                {
+                  "label": "Solid"
+                },
+                {
+                  "label": "Dotted"
+                }
+              ]
+            },
+            {
+              "label": "Border width",
+              "description": "Thickness in em units."
+            }
+          ]
+        },
+        {
+          "label": "Paragraph movement buttons",
+          "description": "Colors for the up and down buttons used to reorder paragraphs.",
+          "fields": [
+            {
+              "label": "Button background color"
+            },
+            {
+              "label": "Button icon color"
+            },
+            {
+              "label": "Button hover background color"
+            },
+            {
+              "label": "Button pressed background color"
+            },
+            {
+              "label": "Disabled button background color"
+            },
+            {
+              "label": "Disabled button icon color"
+            }
+          ]
+        },
+        {
+          "label": "Action buttons (Check, Retry and Show solution)",
+          "description": "Shared style for Check, Try again and Show solution buttons. Border colors apply only when border is enabled.",
+          "fields": [
+            {
+              "label": "Use gradient background"
+            },
+            {
+              "label": "Button background color"
+            },
+            {
+              "label": "Gradient background",
+              "fields": [
+                {
+                  "label": "Gradient angle",
+                  "description": "Direction in degrees (0 = upward, 180 = downward)."
+                },
+                {
+                  "label": "Gradient start color"
+                },
+                {
+                  "label": "Gradient end color"
+                }
+              ]
+            },
+            {
+              "label": "Button text color"
+            },
+            {
+              "label": "Button hover background color"
+            },
+            {
+              "label": "Button hover text color"
+            },
+            {
+              "label": "Use button border"
+            },
+            {
+              "label": "Border settings",
+              "fields": [
+                {
+                  "label": "Button border color"
+                },
+                {
+                  "label": "Button hover border color"
+                }
+              ]
+            },
+            {
+              "label": "Button border radius",
+              "description": "Default is 2em (Joubel UI). Lower values are sharper; higher values are more rounded."
             }
           ]
         }

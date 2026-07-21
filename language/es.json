@@ -50,6 +50,192 @@
               "description": "Margen adicional (en px) cuando la pestaña está cerrada. 0 la deja al ras; valores más altos la ocultan más."
             }
           ]
+        },
+        {
+          "label": "Apariencia de las instrucciones",
+          "fields": [
+            {
+              "label": "Ventana de introducción",
+              "fields": [
+                {
+                  "label": "Usar fondo en degradado"
+                },
+                {
+                  "label": "Color de fondo de la introducción"
+                },
+                {
+                  "label": "Fondo en degradado",
+                  "fields": [
+                    {
+                      "label": "Ángulo del degradado",
+                      "description": "Dirección en grados (0 = hacia arriba, 180 = hacia abajo)."
+                    },
+                    {
+                      "label": "Color inicial del degradado"
+                    },
+                    {
+                      "label": "Color final del degradado"
+                    }
+                  ]
+                },
+                {
+                  "label": "Color del texto de la introducción"
+                },
+                {
+                  "label": "Botón comenzar",
+                  "fields": [
+                    {
+                      "label": "Usar fondo en degradado"
+                    },
+                    {
+                      "label": "Color de fondo del botón"
+                    },
+                    {
+                      "label": "Fondo en degradado",
+                      "fields": [
+                        {
+                          "label": "Ángulo del degradado",
+                          "description": "Dirección en grados (0 = hacia arriba, 180 = hacia abajo)."
+                        },
+                        {
+                          "label": "Color inicial del degradado"
+                        },
+                        {
+                          "label": "Color final del degradado"
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Color del texto del botón"
+                    },
+                    {
+                      "label": "Color de fondo del botón al pasar el cursor"
+                    },
+                    {
+                      "label": "Color del texto del botón al pasar el cursor"
+                    },
+                    {
+                      "label": "Usar borde en el botón"
+                    },
+                    {
+                      "label": "Ajustes del borde",
+                      "fields": [
+                        {
+                          "label": "Color del borde del botón"
+                        },
+                        {
+                          "label": "Color del borde del botón al pasar el cursor"
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Radio del borde del botón",
+                      "description": "Redondeo de las esquinas en unidades rem."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "label": "Pestaña de instrucciones",
+              "fields": [
+                {
+                  "label": "Usar fondo en degradado"
+                },
+                {
+                  "label": "Color de fondo de la pestaña"
+                },
+                {
+                  "label": "Fondo en degradado",
+                  "fields": [
+                    {
+                      "label": "Ángulo del degradado",
+                      "description": "Dirección en grados (0 = hacia arriba, 180 = hacia abajo)."
+                    },
+                    {
+                      "label": "Color inicial del degradado"
+                    },
+                    {
+                      "label": "Color final del degradado"
+                    }
+                  ]
+                },
+                {
+                  "label": "Color del texto de la pestaña"
+                },
+                {
+                  "label": "Color del borde del contenido de la pestaña"
+                },
+                {
+                  "label": "Posición del botón de la pestaña",
+                  "options": [
+                    {
+                      "label": "Izquierda"
+                    },
+                    {
+                      "label": "Centro"
+                    },
+                    {
+                      "label": "Derecha"
+                    }
+                  ]
+                },
+                {
+                  "label": "Botón de la pestaña",
+                  "fields": [
+                    {
+                      "label": "Usar fondo en degradado"
+                    },
+                    {
+                      "label": "Color de fondo del botón"
+                    },
+                    {
+                      "label": "Fondo en degradado",
+                      "fields": [
+                        {
+                          "label": "Ángulo del degradado",
+                          "description": "Dirección en grados (0 = hacia arriba, 180 = hacia abajo)."
+                        },
+                        {
+                          "label": "Color inicial del degradado"
+                        },
+                        {
+                          "label": "Color final del degradado"
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Color del texto del botón"
+                    },
+                    {
+                      "label": "Color de fondo del botón al pasar el cursor"
+                    },
+                    {
+                      "label": "Color del texto del botón al pasar el cursor"
+                    },
+                    {
+                      "label": "Usar borde en el botón"
+                    },
+                    {
+                      "label": "Ajustes del borde",
+                      "fields": [
+                        {
+                          "label": "Color del borde del botón"
+                        },
+                        {
+                          "label": "Color del borde del botón al pasar el cursor"
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Radio del borde del botón",
+                      "description": "Redondeo de las esquinas en unidades rem."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -296,6 +482,124 @@
             },
             {
               "label": "Color de texto de párrafo incorrecto"
+            }
+          ]
+        },
+        {
+          "label": "Destino al reordenar",
+          "description": "Colores y borde del espacio vacío y de la posición resaltada al mover párrafos.",
+          "fields": [
+            {
+              "label": "Color de fondo del destino"
+            },
+            {
+              "label": "Color de fondo del párrafo activo",
+              "description": "Fondo cuando un párrafo está seleccionado o es el destino al soltar."
+            },
+            {
+              "label": "Color de texto del párrafo activo"
+            },
+            {
+              "label": "Color del borde del destino"
+            },
+            {
+              "label": "Color del borde del párrafo activo"
+            },
+            {
+              "label": "Estilo del borde",
+              "options": [
+                {
+                  "label": "Discontinuo"
+                },
+                {
+                  "label": "Continuo"
+                },
+                {
+                  "label": "Punteado"
+                }
+              ]
+            },
+            {
+              "label": "Grosor del borde",
+              "description": "Grosor en unidades em."
+            }
+          ]
+        },
+        {
+          "label": "Botones de movimiento de párrafos",
+          "description": "Colores de los botones arriba y abajo para reordenar párrafos.",
+          "fields": [
+            {
+              "label": "Color de fondo del botón"
+            },
+            {
+              "label": "Color del icono del botón"
+            },
+            {
+              "label": "Color de fondo del botón al pasar el cursor"
+            },
+            {
+              "label": "Color de fondo del botón al pulsar"
+            },
+            {
+              "label": "Color de fondo del botón deshabilitado"
+            },
+            {
+              "label": "Color del icono del botón deshabilitado"
+            }
+          ]
+        },
+        {
+          "label": "Botones de acción (Comprobar, Intentar de nuevo y Mostrar solución)",
+          "description": "Estilo compartido para Comprobar, Intentar de nuevo y Mostrar solución. Los colores del borde solo aplican cuando el borde está activado.",
+          "fields": [
+            {
+              "label": "Usar fondo en degradado"
+            },
+            {
+              "label": "Color de fondo del botón"
+            },
+            {
+              "label": "Fondo en degradado",
+              "fields": [
+                {
+                  "label": "Ángulo del degradado",
+                  "description": "Dirección en grados (0 = hacia arriba, 180 = hacia abajo)."
+                },
+                {
+                  "label": "Color inicial del degradado"
+                },
+                {
+                  "label": "Color final del degradado"
+                }
+              ]
+            },
+            {
+              "label": "Color del texto del botón"
+            },
+            {
+              "label": "Color de fondo del botón al pasar el cursor"
+            },
+            {
+              "label": "Color del texto del botón al pasar el cursor"
+            },
+            {
+              "label": "Usar borde en el botón"
+            },
+            {
+              "label": "Ajustes del borde",
+              "fields": [
+                {
+                  "label": "Color del borde del botón"
+                },
+                {
+                  "label": "Color del borde del botón al pasar el cursor"
+                }
+              ]
+            },
+            {
+              "label": "Radio del borde del botón",
+              "description": "El valor por defecto es 2em (Joubel UI). Valores menores son más rectos; mayores, más redondeados."
             }
           ]
         }

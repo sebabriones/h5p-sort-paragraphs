@@ -37,6 +37,7 @@ export function getInstructionsOptions(instance) {
     introButtonLabel: instructions.introButtonLabel || 'Start',
     tabButtonLabel: instructions.tabButtonLabel || 'Instructions',
     animation: H5P.jQuery.extend(true, {}, instructions.animation || {}),
+    appearance: H5P.jQuery.extend(true, {}, instructions.appearance || {}),
     startCollapsed: instructions.startCollapsed === undefined ?
       true :
       isTruthy(instructions.startCollapsed),
@@ -146,14 +147,53 @@ export function normalizeInlineEvaluationLayout($container) {
 }
 
 /**
+ * Restore action button labels if QuestionCFRD truncated them to icons only.
+ *
+ * @param {H5P.jQuery} $container
+ */
+export function restoreTruncatedActionButtonLabels($container) {
+  const $ = H5P.jQuery;
+  let $buttons;
+
+  if (!$container || !$container.length) {
+    return;
+  }
+
+  $buttons = $container.children('.h5p-question-buttons');
+
+  if (!$buttons.length) {
+    return;
+  }
+
+  $buttons.find('.h5p-joubelui-button.truncated').each(function () {
+    const $btn = $(this);
+    const label = $btn.attr('data-tooltip') || $btn.attr('aria-label') || '';
+
+    if (!label) {
+      return;
+    }
+
+    $btn.html(label).removeClass('truncated').removeAttr('data-tooltip');
+  });
+}
+
+/**
  * @param {H5P.jQuery} $container
  * @param {object} [instance]
+ * @param {object} [options]
+ * @param {boolean} [options.normalizeInline=true]
  */
-export function scheduleInlineEvaluationLayout($container, instance) {
+export function scheduleInlineEvaluationLayout($container, instance, options) {
+  const normalizeInline = !options || options.normalizeInline !== false;
+
   [0, 50, 160, 350].forEach((delay) => {
     setTimeout(() => {
       if ($container && $container.length) {
-        normalizeInlineEvaluationLayout($container);
+        if (normalizeInline) {
+          normalizeInlineEvaluationLayout($container);
+        }
+
+        restoreTruncatedActionButtonLabels($container);
 
         if (instance && typeof instance.trigger === 'function') {
           instance.trigger('resize');
@@ -293,6 +333,23 @@ export function scheduleContextImageAttach(instance) {
 }
 
 /**
+ * Apply shared action button appearance (Check, Retry, Show solution).
+ * @param {object} instance
+ */
+export function applyActionButtonAppearance(instance) {
+  const actionButtons = instance?.params?.appearance?.actionButtons;
+
+  if (!actionButtons || typeof instance.setActionButtonAppearance !== 'function') {
+    return;
+  }
+
+  if (H5P.QuestionCFRD.hasActionButtonAppearance &&
+      H5P.QuestionCFRD.hasActionButtonAppearance(actionButtons)) {
+    instance.setActionButtonAppearance(actionButtons);
+  }
+}
+
+/**
  * Apply activity appearance CSS variables to the play area and root wrapper.
  * @param {object} instance
  */
@@ -319,6 +376,8 @@ export function applyActivityAppearance(instance) {
       overallFeedback,
     );
   }
+
+  applyActionButtonAppearance(instance);
 }
 
 /**
