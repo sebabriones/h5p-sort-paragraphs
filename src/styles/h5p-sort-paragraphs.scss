@@ -4,6 +4,18 @@
   --sp-scale: 1;
   --sp-spacing-m: 1em;
   --sp-spacing-s: 0.5em;
+  --sp-play-area-bg: #ffffff;
+  --sp-paragraph-bg: #dddddd;
+  --sp-paragraph-hover-bg: #ececec;
+  --sp-paragraph-color: #333333;
+  --sp-paragraph-border-radius: 0.375em;
+  --sp-context-color: #555555;
+  --sp-correct-bg: #b6e4ce;
+  --sp-correct-color: #255c41;
+  --sp-wrong-bg: #fbd7d8;
+  --sp-wrong-color: #b71c1c;
+  --sp-feedback-bg: #ffffff;
+  --sp-feedback-color: #333333;
   position: relative;
   box-sizing: border-box;
   width: 100%;
@@ -15,6 +27,12 @@
   overflow: hidden;
   padding: 1em;
   background-color: transparent;
+}
+
+.h5p-container.h5p-sort-paragraphs-cfrd,
+.h5p-sort-paragraphs-cfrd {
+  --sp-play-area-bg: #ffffff;
+  background-color: var(--sp-play-area-bg);
 }
 
 .h5p-container.h5p-sort-paragraphs-cfrd {
@@ -104,7 +122,7 @@
   flex: 0 0 auto;
   font-size: 1em;
   line-height: 1.5;
-  color: #555555;
+  color: var(--sp-context-color);
 }
 
 .h5p-sp-play-area .h5p-sp-context-text p {
@@ -249,6 +267,8 @@
 .h5p-sort-paragraphs-cfrd .h5p-question-feedback.h5p-question-popup {
   width: min(90%, 100%);
   max-width: 100%;
+  background-color: var(--sp-feedback-bg);
+  color: var(--sp-feedback-color);
 }
 
 .h5p-sort-paragraphs-cfrd .h5p-question-feedback.h5p-question-popup .h5p-question-feedback-content-text,
@@ -277,12 +297,13 @@
   }
 
   .h5p-sort-paragraphs-paragraph {
-    background-color: main.$color-enabled;
+    background-color: var(--sp-paragraph-bg, #{main.$color-enabled});
     border-color: transparent;
-    border-radius: .3em;
+    border-radius: var(--sp-paragraph-border-radius, .3em);
     border-style: solid;
     border-width: .25em;
     box-shadow: 0 0.1em 0 main.$color-box-shadow-regular;
+    color: var(--sp-paragraph-color, inherit);
     cursor: move;
     display: flex;
     flex-direction: row;
@@ -318,10 +339,10 @@
     }
 
     &.h5p-sort-paragraphs-over, &.h5p-sort-paragraphs-selected {
-      background: main.$color-over;
+      background: var(--sp-paragraph-hover-bg, #{main.$color-over});
       border-color: #0825ff;
       box-shadow: 0 0.1em 0 #b1c5e0;
-      color: main.$color-over-text;
+      color: var(--sp-paragraph-color, #{main.$color-over-text});
     }
 
     .h5p-sort-paragraphs-paragraph-corrections {
@@ -330,13 +351,14 @@
     }
 
     &.h5p-sort-paragraphs-correct {
-      background: main.$color-correct-light;
-      border-color: main.$color-correct-light;
+      background: var(--sp-correct-bg, #{main.$color-correct-light});
+      border-color: var(--sp-correct-bg, #{main.$color-correct-light});
       box-shadow: 0 0.1em 0 main.$color-correct-box-shadow;
-      color: main.$color-correct-dark;
+      color: var(--sp-correct-color, #{main.$color-correct-dark});
 
       .h5p-sort-paragraphs-paragraph-corrections::before {
         content: main.$icon-correct;
+        color: var(--sp-correct-color, #{main.$color-correct-dark});
         font-family: 'H5PFontAwesome4', sans-serif;
       }
 
@@ -346,13 +368,14 @@
     }
 
     &.h5p-sort-paragraphs-wrong {
-      background: main.$color-wrong-light;
-      border-color: main.$color-wrong-light;
+      background: var(--sp-wrong-bg, #{main.$color-wrong-light});
+      border-color: var(--sp-wrong-bg, #{main.$color-wrong-light});
       box-shadow: 0 0.1em 0 main.$color-wrong-box-shadow;
-      color: main.$color-wrong-dark;
+      color: var(--sp-wrong-color, #{main.$color-wrong-dark});
 
       .h5p-sort-paragraphs-paragraph-corrections::before {
         content: main.$icon-wrong;
+        color: var(--sp-wrong-color, #{main.$color-wrong-dark});
         font-family: 'H5PFontAwesome4', sans-serif;
       }
 
@@ -508,14 +531,14 @@
     }
 
     &.h5p-sort-paragraphs-correct {
-      background: main.$color-correct-dark;
-      border-color: main.$color-correct-light;
+      background: var(--sp-correct-bg, #{main.$color-correct-dark});
+      border-color: var(--sp-correct-bg, #{main.$color-correct-light});
       box-shadow: 0 0.1em 0 main.$color-correct-box-shadow;
     }
 
     &.h5p-sort-paragraphs-wrong {
-      background: main.$color-wrong-dark;
-      border-color: main.$color-wrong-light;
+      background: var(--sp-wrong-bg, #{main.$color-wrong-dark});
+      border-color: var(--sp-wrong-bg, #{main.$color-wrong-light});
       box-shadow: 0 0.1em 0 main.$color-wrong-box-shadow;
     }
 

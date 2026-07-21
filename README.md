@@ -5,14 +5,14 @@ Fork CFRD de **H5P.SortParagraphs** (upstream 0.11.16, `coreApi` 1.23, Lumi).
 | Campo | Valor |
 |-------|-------|
 | `machineName` | `H5P.SortParagraphsCFRD` |
-| Versión actual | **1.0.5** |
+| Versión actual | **1.0.6** |
 | Constructor JS | `H5P.SortParagraphsCFRD` |
 | Editor | `semantics.json` + widgets upstream — sin editor dedicado |
 | Rama git | `sort-paragraphs-cfrd-1.0.0` |
 
-## Estado (1.0.5)
+## Estado (1.0.6)
 
-Etapa 5 — popup de feedback global con `resolveOverallFeedback`, botón “Ver retroalimentación” y cierre dismissible. Pendiente: apariencia por actividad (`appearance.js`, etapa 6) y cierre operativo (etapa 7).
+Etapa 6 — `js/appearance.js` aplica colores de apariencia por actividad (fondo, párrafos, contexto, correcto/incorrecto, popup). Pendiente: cierre operativo (presave, docs, checklist, etapa 7).
 
 Referencia de portación: `../h5p-sort-paragraphs-cfrd-1.1/` y `dev/multi-choice-cfrd/h5p-multi-choice-cfrd-1.0/`.
 

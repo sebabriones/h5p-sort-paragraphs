@@ -293,6 +293,35 @@ export function scheduleContextImageAttach(instance) {
 }
 
 /**
+ * Apply activity appearance CSS variables to the play area and root wrapper.
+ * @param {object} instance
+ */
+export function applyActivityAppearance(instance) {
+  const AppearanceModule = H5P.SortParagraphsCFRD && H5P.SortParagraphsCFRD.Appearance;
+  let appearance;
+  let overallFeedback;
+
+  if (!AppearanceModule || !instance) {
+    return;
+  }
+
+  appearance = instance.params && instance.params.appearance;
+  overallFeedback = instance.params && instance.params.overallFeedback;
+
+  if (instance.$playArea && instance.$playArea.length) {
+    AppearanceModule.scheduleAppearance(instance.$playArea, appearance, overallFeedback);
+  }
+
+  if (instance.$container && instance.$container.length) {
+    AppearanceModule.schedulePlayAreaRootBackground(
+      instance.$container,
+      appearance,
+      overallFeedback,
+    );
+  }
+}
+
+/**
  * Unwrap a range entry when the editor nests fields under overallFeedback.
  * @param {object} entry
  * @return {object}

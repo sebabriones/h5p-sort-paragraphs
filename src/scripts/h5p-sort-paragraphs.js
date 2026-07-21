@@ -8,6 +8,7 @@ import {
   scheduleContextImageAttach,
   scheduleInlineEvaluationLayout,
   setupPlayAreaLayout,
+  applyActivityAppearance,
   refreshInstructionsScale,
   getContextLayoutClass,
   hasContextText,
@@ -19,7 +20,7 @@ const VIEW_STATES = { task: 0, results: 1, solutions: 2 };
 const DEFAULT_DESCRIPTION = 'SortParagraphs';
 
 /**
- * Sort Paragraphs CFRD 1.0 — H5P.QuestionCFRD (etapa 5: feedback popup).
+ * Sort Paragraphs CFRD 1.0 — H5P.QuestionCFRD (etapa 6: appearance).
  * @param {object} params
  * @param {number} contentId
  * @param {object} [extras]
@@ -195,6 +196,7 @@ function SortParagraphsCFRD(params, contentId, extras) {
     }
 
     refreshInstructionsScale(self);
+    applyActivityAppearance(self);
 
     if (self.content) {
       self.content.resize();
@@ -238,6 +240,7 @@ function SortParagraphsCFRD(params, contentId, extras) {
     }
 
     scheduleDeferredResize(self);
+    applyActivityAppearance(self);
   };
 
   self.on('resize', function (event) {
