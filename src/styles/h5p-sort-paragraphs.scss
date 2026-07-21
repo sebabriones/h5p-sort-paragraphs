@@ -547,7 +547,7 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: 1.15em 1.15em;
-    border: 2px solid transparent;
+    border: 0.125em solid transparent;
     border-radius: 0.3em;
     box-shadow: 0 0.1em 0 main.$color-box-shadow-regular;
     color: var(--sp-move-btn-color);
@@ -556,8 +556,8 @@
     flex-shrink: 0;
     height: 2.75em;
     justify-content: center;
-    min-height: 42px;
-    min-width: 42px;
+    min-height: 0;
+    min-width: 0;
     padding: 0;
     width: 2.75em;
 
@@ -595,7 +595,7 @@
   }
 
   .h5p-sort-paragraphs-paragraph-container {
-    border: 2px solid transparent;
+    border: 0.125em solid transparent;
     display: flex;
     flex-direction: column;
     margin-left: 1em;
