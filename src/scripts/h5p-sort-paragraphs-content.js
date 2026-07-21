@@ -56,6 +56,7 @@ export default class SortParagraphsContent {
       scoringMode: params.scoringMode || 'transitions',
       penalties: (typeof params.penalties !== 'boolean') ? true : params.penalties,
       duplicatesInterchangeable: params.duplicatesInterchangeable,
+      showScorePoints: params.showScorePoints === true,
     };
 
     // ARIA label texts
@@ -285,20 +286,24 @@ export default class SortParagraphsContent {
    * @param {boolean[]} results.correctAnswers True if paragraph/separator at index is correct.
    */
   showScoreExplanation(elements, results) {
-    this.scorePoints = this.scorePoints || new H5P.QuestionCFRD.ScorePoints();
-
     results.correctAnswers.forEach((answer, index) => {
       const element = elements[index];
 
       if (answer === true) {
         element.toggleEffect('correct', true);
-        element.showScoreExplanation(this.scorePoints.getElement(true));
+
+        if (this.options.showScorePoints) {
+          this.scorePoints = this.scorePoints || new H5P.QuestionCFRD.ScorePoints();
+          element.showScoreExplanation(this.scorePoints.getElement(true));
+        }
       }
       else {
         element.toggleEffect('wrong', true);
 
         const showMinus = (this.options.penalties && this.options.scoringMode === 'positions');
-        if (showMinus) {
+
+        if (showMinus && this.options.showScorePoints) {
+          this.scorePoints = this.scorePoints || new H5P.QuestionCFRD.ScorePoints();
           element.showScoreExplanation(this.scorePoints.getElement(false));
         }
       }
@@ -388,9 +393,12 @@ export default class SortParagraphsContent {
      * cope with 'application' instead of 'list', too.
      */
     list.setAttribute('role', 'application');
+    const prefix = this.params.listLabelPrefix ?
+      `${this.params.listLabelPrefix} ` :
+      (this.params.taskDescription ? `${this.params.taskDescription} ` : '');
     list.setAttribute(
       'aria-label',
-      `${this.params.taskDescription} ${this.params.a11y.listDescription}`,
+      `${prefix}${this.params.a11y.listDescription}`,
     );
     list.classList.add('h5p-sort-paragraphs-list');
 
@@ -1030,9 +1038,12 @@ export default class SortParagraphsContent {
    * Reset content.
    */
   reset() {
+    const prefix = this.params.listLabelPrefix ?
+      `${this.params.listLabelPrefix} ` :
+      (this.params.taskDescription ? `${this.params.taskDescription} ` : '');
     this.list.setAttribute(
       'aria-label',
-      `${this.params.taskDescription} ${this.params.a11y.listDescription}`,
+      `${prefix}${this.params.a11y.listDescription}`,
     );
 
     this.answerGiven = false;

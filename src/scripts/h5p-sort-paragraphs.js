@@ -1,11 +1,16 @@
 import SortParagraphsContent from './h5p-sort-paragraphs-content.js';
 import Util from './h5p-sort-paragraphs-util.js';
+import {
+  normalizeCfrdParams,
+  getInstructionsOptions,
+  stripHtmlText,
+} from './sort-paragraphs-cfrd-helpers.js';
 
 const VIEW_STATES = { task: 0, results: 1, solutions: 2 };
 const DEFAULT_DESCRIPTION = 'SortParagraphs';
 
 /**
- * Sort Paragraphs CFRD 1.0 — H5P.QuestionCFRD skeleton (etapa 1).
+ * Sort Paragraphs CFRD 1.0 — H5P.QuestionCFRD (etapa 1+2: player + semantics CFRD).
  * @param {object} params
  * @param {number} contentId
  * @param {object} [extras]
@@ -24,23 +29,33 @@ function SortParagraphsCFRD(params, contentId, extras) {
   self.contentId = contentId;
   self.extras = extras;
 
-  self.params = Util.extend({
-    media: {},
-    taskDescription: null,
+  self.options = Util.extend({
+    instructions: {},
+    context: {},
     paragraphs: [],
+    overallFeedback: {
+      popupBackgroundColor: '#ffffff',
+      feedbackTextColor: '#333333',
+      overallFeedback: [],
+    },
+    appearance: {},
     behaviour: {
       duplicatesInterchangeable: true,
       enableSolutionsButton: true,
       enableRetry: true,
-      scoringMode: 'transitions',
+      scoringMode: 'positions',
       applyPenalties: true,
       addButtonsForMovement: true,
+      showScorePoints: false,
     },
-    l10n: {
-      checkAnswer: 'Check answer',
-      submitAnswer: 'Submit',
-      showSolution: 'Show solution',
-      tryAgain: 'Retry',
+    UI: {
+      checkAnswerButton: 'Check',
+      submitAnswerButton: 'Submit',
+      tryAgainButton: 'Retry',
+      showSolutionButton: 'Show solution',
+      scoreBarLabel: 'You got :num out of :total points',
+      feedbackPopupCloseLabel: 'Close',
+      showFeedbackButtonLabel: 'Show feedback',
       up: 'Up',
       down: 'Down',
       disabled: 'Disabled',
@@ -71,12 +86,15 @@ function SortParagraphsCFRD(params, contentId, extras) {
     },
   }, params);
 
+  normalizeCfrdParams(self.options);
+  self.params = self.options;
+
   self.canStoreState = !Number.isNaN(parseInt(H5PIntegration?.saveFreq));
   self.stateProvider = self.retrieveStateProvider();
 
-  for (const word in self.params.l10n) {
-    if (typeof self.params.l10n[word] === 'string') {
-      self.params.l10n[word] = Util.stripHTML(Util.htmlDecode(self.params.l10n[word]));
+  for (const word in self.params.UI) {
+    if (typeof self.params.UI[word] === 'string') {
+      self.params.UI[word] = Util.stripHTML(Util.htmlDecode(self.params.UI[word]));
     }
   }
 
@@ -89,6 +107,10 @@ function SortParagraphsCFRD(params, contentId, extras) {
     self.extras.previousState :
     null;
 
+  const instructionsPlain = getInstructionsOptions(self) ?
+    stripHtmlText(self.params.instructions.text) :
+    stripHtmlText(self.params.taskDescription || '');
+
   self.content = new SortParagraphsContent(
     {
       paragraphs: self.params.paragraphs,
@@ -96,16 +118,15 @@ function SortParagraphsCFRD(params, contentId, extras) {
       duplicatesInterchangeable: self.params.behaviour.duplicatesInterchangeable,
       penalties: self.params.behaviour.applyPenalties,
       scoringMode: self.params.behaviour.scoringMode,
-      taskDescription: Util.stripHTML(self.params.taskDescription || '')
-        .replace(/(\r\n|\n|\r)/gm, ' ')
-        .replace(/\s{2}/g, ' ')
-        .trim(),
+      showScorePoints: self.params.behaviour.showScorePoints === true,
+      taskDescription: instructionsPlain,
+      listLabelPrefix: instructionsPlain,
       previousState: self.previousState,
       a11y: self.params.a11y,
       l10n: {
-        up: self.params.l10n.up,
-        down: self.params.l10n.down,
-        disabled: self.params.l10n.disabled,
+        up: self.params.UI.up,
+        down: self.params.UI.down,
+        disabled: self.params.UI.disabled,
       },
       viewStates: VIEW_STATES,
     },
@@ -127,7 +148,8 @@ SortParagraphsCFRD.DEFAULT_DESCRIPTION = DEFAULT_DESCRIPTION;
 
 SortParagraphsCFRD.prototype.registerDomElements = function () {
   const self = this;
-  const media = self.params.media.type;
+  const media = self.params.media && self.params.media.type;
+  const instructions = getInstructionsOptions(self);
 
   if (media && media.library) {
     const type = media.library.split(' ')[0];
@@ -155,7 +177,13 @@ SortParagraphsCFRD.prototype.registerDomElements = function () {
     }
   }
 
-  if (self.params.taskDescription) {
+  if (instructions && instructions.text) {
+    const introduction = document.createElement('div');
+    introduction.classList.add('h5p-sort-paragraphs-task-description');
+    introduction.innerHTML = instructions.text;
+    self.setIntroduction(introduction);
+  }
+  else if (self.params.taskDescription) {
     const introduction = document.createElement('div');
     introduction.classList.add('h5p-sort-paragraphs-task-description');
     introduction.innerHTML = self.params.taskDescription;
@@ -201,17 +229,17 @@ SortParagraphsCFRD.prototype.registerDomElements = function () {
 SortParagraphsCFRD.prototype.addButtons = function () {
   const self = this;
 
-  self.addButton('check-answer', self.params.l10n.checkAnswer, () => {
+  self.addButton('check-answer', self.params.UI.checkAnswerButton, () => {
     self.checkAnswer();
   }, true, {
     'aria-label': self.params.a11y.check,
   }, {
     contentData: self.extras,
-    textIfSubmitting: self.params.l10n.submitAnswer,
+    textIfSubmitting: self.params.UI.submitAnswerButton,
     icon: 'check',
   });
 
-  self.addButton('show-solution', self.params.l10n.showSolution, () => {
+  self.addButton('show-solution', self.params.UI.showSolutionButton, () => {
     self.hideButton('show-solution');
     self.showSolutions();
   }, false, {
@@ -221,7 +249,7 @@ SortParagraphsCFRD.prototype.addButtons = function () {
     icon: 'show-solutions',
   });
 
-  self.addButton('try-again', self.params.l10n.tryAgain, () => {
+  self.addButton('try-again', self.params.UI.tryAgainButton, () => {
     self.resetTask();
   }, false, {
     'aria-label': self.params.a11y.retry,
@@ -378,11 +406,16 @@ SortParagraphsCFRD.prototype.checkAnswer = function () {
 
     const score = self.getScore();
     const maxScore = self.getMaxScore();
+    const feedbackRanges = self.params.overallFeedback &&
+      self.params.overallFeedback.overallFeedback ?
+      self.params.overallFeedback.overallFeedback :
+      self.params.overallFeedback;
     const textScore = H5P.QuestionCFRD.determineOverallFeedback(
-      self.params.overallFeedback, score / maxScore);
-    const ariaMessage = (self.params.a11y.yourResult || '')
-      .replace('@score', ':num')
-      .replace('@total', ':total');
+      feedbackRanges, score / maxScore);
+    const ariaMessage = self.params.UI.scoreBarLabel ||
+      (self.params.a11y.yourResult || '')
+        .replace('@score', ':num')
+        .replace('@total', ':total');
 
     self.setFeedback(
       textScore.trim(),
@@ -407,6 +440,10 @@ SortParagraphsCFRD.prototype.getTitle = function () {
 };
 
 SortParagraphsCFRD.prototype.getDescription = function () {
+  const instructions = getInstructionsOptions(this);
+  if (instructions) {
+    return instructions.text;
+  }
   return this.params.taskDescription || DEFAULT_DESCRIPTION;
 };
 
