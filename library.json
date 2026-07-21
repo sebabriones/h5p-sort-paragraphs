@@ -7,7 +7,7 @@
   "author": "sbriones (CFRD-UDEC)",
   "majorVersion": 1,
   "minorVersion": 0,
-  "patchVersion": 3,
+  "patchVersion": 4,
   "runnable": 1,
   "embedTypes": [
     "iframe"
@@ -17,6 +17,9 @@
     "minorVersion": 23
   },
   "preloadedJs": [
+    {
+      "path": "js/play-area-scale.js"
+    },
     {
       "path": "dist/h5p-sort-paragraphs-cfrd.js"
     }
