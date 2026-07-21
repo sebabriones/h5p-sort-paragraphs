@@ -1,22 +1,19 @@
 {
-  "name": "h5p-sort-paragraphs",
-  "version": "0.11.16",
-  "description": "Let students sort paragraphs into the correct order",
+  "name": "h5p-sort-paragraphs-cfrd",
+  "version": "1.0.0",
+  "description": "Sort the Paragraphs (CFRD) línea 1.0 — fork upstream 0.11.16, coreApi 1.23, Lumi.",
   "private": true,
   "scripts": {
     "lint": "stylelint './src/**/*.scss' && eslint './src/**/*.js'",
     "build": "webpack --mode=production",
-    "watch": "webpack --mode=development --watch"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/otacke/h5p-sort-paragraphs.git"
+    "watch": "webpack --mode=development --watch",
+    "sync:lumi": "powershell -ExecutionPolicy Bypass -File ..\\scripts\\sync-lumi.ps1"
   },
   "keywords": [
     "h5p",
     "library"
   ],
-  "author": "Oliver Tacke",
+  "author": "sbriones (CFRD-UDEC)",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.28.5",

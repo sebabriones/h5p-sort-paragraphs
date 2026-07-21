@@ -1,28 +1,29 @@
 {
-  "title": "Sort the Paragraphs",
+  "machineName": "H5P.SortParagraphsCFRD",
+  "title": "Sort the Paragraphs (CFRD)",
   "description": "Let students sort paragraphs into the correct order",
-  "majorVersion": 0,
-  "minorVersion": 11,
-  "patchVersion": 16,
-  "runnable": 1,
-  "author": "Oliver Tacke",
+  "contentType": "Question",
   "license": "MIT",
-  "coreApi": {
-    "majorVersion": 1,
-    "minorVersion": 27
-  },
-  "machineName": "H5P.SortParagraphs",
+  "author": "sbriones (CFRD-UDEC)",
+  "majorVersion": 1,
+  "minorVersion": 0,
+  "patchVersion": 0,
+  "runnable": 1,
   "embedTypes": [
     "iframe"
   ],
+  "coreApi": {
+    "majorVersion": 1,
+    "minorVersion": 23
+  },
   "preloadedJs": [
     {
-      "path": "dist/h5p-sort-paragraphs.js"
+      "path": "dist/h5p-sort-paragraphs-cfrd.js"
     }
   ],
   "preloadedCss": [
     {
-      "path": "dist/h5p-sort-paragraphs.css"
+      "path": "dist/h5p-sort-paragraphs-cfrd.css"
     }
   ],
   "preloadedDependencies": [
@@ -32,14 +33,24 @@
       "minorVersion": 5
     },
     {
-      "machineName": "H5P.Question",
+      "machineName": "H5P.JoubelUICFRD",
       "majorVersion": 1,
-      "minorVersion": 5
+      "minorVersion": 0
     },
     {
-      "machineName": "H5P.JoubelUI",
+      "machineName": "H5P.QuestionCFRD",
       "majorVersion": 1,
-      "minorVersion": 3
+      "minorVersion": 0
+    },
+    {
+      "machineName": "H5P.Instructions",
+      "majorVersion": 1,
+      "minorVersion": 0
+    },
+    {
+      "machineName": "H5P.Image",
+      "majorVersion": 1,
+      "minorVersion": 1
     }
   ],
   "editorDependencies": [
@@ -52,6 +63,11 @@
       "machineName": "H5PEditor.ShowWhen",
       "majorVersion": 1,
       "minorVersion": 0
+    },
+    {
+      "machineName": "H5PEditor.ColorSelector",
+      "majorVersion": 1,
+      "minorVersion": 3
     }
   ]
 }
