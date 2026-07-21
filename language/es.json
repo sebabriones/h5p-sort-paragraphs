@@ -203,6 +203,35 @@
       "label": "Interfaz de usuario",
       "fields": [
         {
+          "label": "Etiqueta del botón Comprobar respuesta",
+          "default": "Comprobar"
+        },
+        {
+          "label": "Etiqueta del botón Enviar respuesta",
+          "default": "Enviar"
+        },
+        {
+          "label": "Etiqueta del botón Mostrar solución",
+          "default": "Mostrar solución"
+        },
+        {
+          "label": "Etiqueta del botón Intentar de nuevo",
+          "default": "Intentar de nuevo"
+        },
+        {
+          "label": "Representación textual de la barra de puntuación para lectores de pantalla",
+          "description": "Las variables disponibles son :num y :total",
+          "default": "Has obtenido :num de un total de :total puntos"
+        },
+        {
+          "label": "Etiqueta del botón cerrar popup de retroalimentación",
+          "default": "Cerrar"
+        },
+        {
+          "label": "Etiqueta del botón mostrar retroalimentación",
+          "default": "Ver retroalimentación"
+        },
+        {
           "label": "Texto para botón \"Arriba\"",
           "default": "Arriba"
         },

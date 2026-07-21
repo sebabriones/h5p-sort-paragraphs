@@ -19,7 +19,7 @@ const VIEW_STATES = { task: 0, results: 1, solutions: 2 };
 const DEFAULT_DESCRIPTION = 'SortParagraphs';
 
 /**
- * Sort Paragraphs CFRD 1.0 — H5P.QuestionCFRD (etapa 4: play area 16:9).
+ * Sort Paragraphs CFRD 1.0 — H5P.QuestionCFRD (etapa 5: feedback popup).
  * @param {object} params
  * @param {number} contentId
  * @param {object} [extras]
@@ -389,6 +389,54 @@ SortParagraphsCFRD.prototype.addButtons = function () {
     styleType: 'secondary',
     icon: 'retry',
   });
+
+  self.addButton('show-feedback', self.params.UI.showFeedbackButtonLabel, () => {
+    self.showFeedbackPopup();
+    self.hideButton('show-feedback');
+  }, false);
+  self.hideButton('show-feedback');
+};
+
+/**
+ * Show overall feedback in a dismissible popup (QuestionCFRD).
+ */
+SortParagraphsCFRD.prototype.showOverallFeedback = function () {
+  const self = this;
+  const score = self.getScore();
+  const max = self.getMaxScore();
+  const ratio = max > 0 ? score / max : 0;
+  const resolved = H5P.QuestionCFRD.resolveOverallFeedback(
+    self.params.overallFeedback,
+    ratio,
+    self.contentId,
+    score,
+    max,
+  );
+  let popupSettings;
+
+  if (resolved && resolved.html && resolved.html.trim().length > 0) {
+    popupSettings = {
+      showAsPopup: true,
+      closeText: self.params.UI.feedbackPopupCloseLabel || 'Close',
+      alwaysShowClose: true,
+      dismissible: true,
+      popupBackgroundColor: resolved.popupBackgroundColor,
+      plainText: resolved.plainText,
+      onClose: function () {
+        self.showButton('show-feedback');
+      },
+    };
+    self.hideButton('show-feedback');
+  }
+
+  self.setFeedback(
+    resolved ? resolved.html : '',
+    score,
+    max,
+    self.params.UI.scoreBarLabel,
+    false,
+    popupSettings,
+  );
 };
 
 SortParagraphsCFRD.prototype.getAnswerGiven = function () {
@@ -432,6 +480,7 @@ SortParagraphsCFRD.prototype.resetTask = function () {
   this.showButton('check-answer');
   this.hideButton('show-solution');
   this.hideButton('try-again');
+  this.hideButton('show-feedback');
   this.removeFeedback();
   this.content.reset();
   this.previousState = {};
@@ -536,25 +585,7 @@ SortParagraphsCFRD.prototype.checkAnswer = function () {
       skipFocus: isExternalCall,
     });
 
-    const score = self.getScore();
-    const maxScore = self.getMaxScore();
-    const feedbackRanges = self.params.overallFeedback &&
-      self.params.overallFeedback.overallFeedback ?
-      self.params.overallFeedback.overallFeedback :
-      self.params.overallFeedback;
-    const textScore = H5P.QuestionCFRD.determineOverallFeedback(
-      feedbackRanges, score / maxScore);
-    const ariaMessage = self.params.UI.scoreBarLabel ||
-      (self.params.a11y.yourResult || '')
-        .replace('@score', ':num')
-        .replace('@total', ':total');
-
-    self.setFeedback(
-      textScore.trim(),
-      score,
-      maxScore,
-      ariaMessage,
-    );
+    self.showOverallFeedback();
   }, 0);
 };
 
