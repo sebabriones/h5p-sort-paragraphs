@@ -31,7 +31,12 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
     moveButtonDisabledBackground: '#dddddd',
     moveButtonDisabledText: '#606060',
     feedbackBackground: '#ffffff',
-    feedbackTextColor: '#333333'
+    feedbackTextColor: '#333333',
+    scrollbarWidth: 8,
+    scrollbarShowTrack: true,
+    scrollbarTrack: '#e8e8e8',
+    scrollbarThumb: '#b0b0b0',
+    scrollbarThumbHover: '#888888'
   };
 
   var CSS_VAR_KEYS = {
@@ -58,12 +63,19 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
     moveButtonDisabledBackground: '--sp-move-btn-disabled-bg',
     moveButtonDisabledText: '--sp-move-btn-disabled-color',
     feedbackBackground: '--sp-feedback-bg',
-    feedbackTextColor: '--sp-feedback-color'
+    feedbackTextColor: '--sp-feedback-color',
+    scrollbarTrack: '--sp-scrollbar-track',
+    scrollbarThumb: '--sp-scrollbar-thumb',
+    scrollbarThumbHover: '--sp-scrollbar-thumb-hover'
   };
 
   var CSS_EM_VAR_KEYS = {
     paragraphBorderRadius: '--sp-paragraph-border-radius',
     dropBorderWidth: '--sp-drop-border-width'
+  };
+
+  var CSS_PX_VAR_KEYS = {
+    scrollbarWidth: '--sp-scrollbar-width'
   };
 
   /**
@@ -81,6 +93,23 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
     }
 
     return num + 'em';
+  }
+
+  /**
+   * @param {number|string} value
+   * @param {number|string} fallback
+   * @returns {string}
+   */
+  function toPx(value, fallback) {
+    var num = (value !== undefined && value !== null && value !== '') ?
+      Number(value) :
+      Number(fallback);
+
+    if (isNaN(num)) {
+      num = Number(fallback);
+    }
+
+    return num + 'px';
   }
 
   /**
@@ -112,6 +141,7 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
     var wrong = (appearance && appearance.wrongColors) || {};
     var interaction = (appearance && appearance.paragraphInteraction) || {};
     var movementButtons = (appearance && appearance.movementButtons) || {};
+    var scrollbar = (appearance && appearance.scrollbar) || {};
 
     return {
       playAreaBackground: appearance && appearance.playAreaBackground,
@@ -136,7 +166,12 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
       moveButtonHoverBackground: movementButtons.hoverBackground,
       moveButtonActiveBackground: movementButtons.activeBackground,
       moveButtonDisabledBackground: movementButtons.disabledBackground,
-      moveButtonDisabledText: movementButtons.disabledText
+      moveButtonDisabledText: movementButtons.disabledText,
+      scrollbarWidth: scrollbar.width,
+      scrollbarShowTrack: scrollbar.showTrack,
+      scrollbarTrack: scrollbar.track,
+      scrollbarThumb: scrollbar.thumb,
+      scrollbarThumbHover: scrollbar.thumbHover
     };
   }
 
@@ -169,6 +204,10 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
     merged.feedbackBackground = feedbackColors.feedbackBackground;
     merged.feedbackTextColor = feedbackColors.feedbackTextColor;
 
+    if (merged.scrollbarShowTrack === false) {
+      merged.scrollbarTrack = 'transparent';
+    }
+
     return merged;
   }
 
@@ -180,6 +219,10 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
   function getCssVarValue(merged, key) {
     if (Object.prototype.hasOwnProperty.call(CSS_EM_VAR_KEYS, key)) {
       return toEm(merged[key], APPEARANCE_DEFAULTS[key]);
+    }
+
+    if (Object.prototype.hasOwnProperty.call(CSS_PX_VAR_KEYS, key)) {
+      return toPx(merged[key], APPEARANCE_DEFAULTS[key]);
     }
 
     return merged[key];
@@ -217,6 +260,12 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
       for (key in CSS_EM_VAR_KEYS) {
         if (Object.prototype.hasOwnProperty.call(CSS_EM_VAR_KEYS, key)) {
           el.style.setProperty(CSS_EM_VAR_KEYS[key], getCssVarValue(merged, key));
+        }
+      }
+
+      for (key in CSS_PX_VAR_KEYS) {
+        if (Object.prototype.hasOwnProperty.call(CSS_PX_VAR_KEYS, key)) {
+          el.style.setProperty(CSS_PX_VAR_KEYS[key], getCssVarValue(merged, key));
         }
       }
     }

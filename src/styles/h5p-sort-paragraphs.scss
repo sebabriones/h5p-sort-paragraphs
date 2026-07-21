@@ -30,6 +30,10 @@
   --sp-move-btn-disabled-color: #606060;
   --sp-feedback-bg: #ffffff;
   --sp-feedback-color: #333333;
+  --sp-scrollbar-width: 8px;
+  --sp-scrollbar-track: #e8e8e8;
+  --sp-scrollbar-thumb: #b0b0b0;
+  --sp-scrollbar-thumb-hover: #888888;
   position: relative;
   box-sizing: border-box;
   width: 100%;
@@ -176,6 +180,40 @@
   min-width: 0;
   overflow-x: hidden;
   overflow-y: auto;
+}
+
+/* Scrollbar (instructions-style), colors from appearance */
+.h5p-sp-play-area .h5p-question-content,
+.h5p-sp-play-area .h5p-sp-context,
+.h5p-sp-play-area .h5p-sp-task-column {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sp-scrollbar-thumb) var(--sp-scrollbar-track);
+}
+
+.h5p-sp-play-area .h5p-question-content::-webkit-scrollbar,
+.h5p-sp-play-area .h5p-sp-context::-webkit-scrollbar,
+.h5p-sp-play-area .h5p-sp-task-column::-webkit-scrollbar {
+  width: var(--sp-scrollbar-width);
+}
+
+.h5p-sp-play-area .h5p-question-content::-webkit-scrollbar-track,
+.h5p-sp-play-area .h5p-sp-context::-webkit-scrollbar-track,
+.h5p-sp-play-area .h5p-sp-task-column::-webkit-scrollbar-track {
+  background: var(--sp-scrollbar-track);
+  border-radius: 4px;
+}
+
+.h5p-sp-play-area .h5p-question-content::-webkit-scrollbar-thumb,
+.h5p-sp-play-area .h5p-sp-context::-webkit-scrollbar-thumb,
+.h5p-sp-play-area .h5p-sp-task-column::-webkit-scrollbar-thumb {
+  background: var(--sp-scrollbar-thumb);
+  border-radius: 4px;
+}
+
+.h5p-sp-play-area .h5p-question-content::-webkit-scrollbar-thumb:hover,
+.h5p-sp-play-area .h5p-sp-context::-webkit-scrollbar-thumb:hover,
+.h5p-sp-play-area .h5p-sp-task-column::-webkit-scrollbar-thumb:hover {
+  background: var(--sp-scrollbar-thumb-hover);
 }
 
 .h5p-sp-context--image-only .h5p-sp-context-text,
