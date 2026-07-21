@@ -5,14 +5,14 @@ Fork CFRD de **H5P.SortParagraphs** (upstream 0.11.16, `coreApi` 1.23, Lumi).
 | Campo | Valor |
 |-------|-------|
 | `machineName` | `H5P.SortParagraphsCFRD` |
-| Versión actual | **1.0.0** |
+| Versión actual | **1.0.1** |
 | Constructor JS | `H5P.SortParagraphsCFRD` |
 | Editor | `semantics.json` + widgets upstream — sin editor dedicado |
 | Rama git | `sort-paragraphs-cfrd-1.0.0` |
 
-## Estado (1.0.0)
+## Estado (1.0.1)
 
-Etapa 0 — identidad CFRD e infraestructura de sync. El player aún usa la lógica upstream (`H5P.Question`); la portación a `QuestionCFRD` 1.0 sigue en etapas posteriores.
+Etapa 1 — player con `H5P.QuestionCFRD` 1.0: botones CFRD, contratos de puntuación/xAPI y lógica upstream de ordenar párrafos. Pendiente: semantics CFRD, instructions, play area, popup (etapas 2+).
 
 Referencia de portación: `../h5p-sort-paragraphs-cfrd-1.1/` y `dev/multi-choice-cfrd/h5p-multi-choice-cfrd-1.0/`.
 

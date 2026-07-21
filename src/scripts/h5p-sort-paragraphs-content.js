@@ -285,7 +285,7 @@ export default class SortParagraphsContent {
    * @param {boolean[]} results.correctAnswers True if paragraph/separator at index is correct.
    */
   showScoreExplanation(elements, results) {
-    this.scorePoints = this.scorePoints || new H5P.Question.ScorePoints();
+    this.scorePoints = this.scorePoints || new H5P.QuestionCFRD.ScorePoints();
 
     results.correctAnswers.forEach((answer, index) => {
       const element = elements[index];
