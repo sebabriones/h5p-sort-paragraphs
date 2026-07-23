@@ -65,7 +65,10 @@ export function scheduleInstructionsAttach(instance, $fallbackContainer) {
         return;
       }
 
-      if ($target.find('.h5p-instructions-root').length) {
+      if (
+        $target.find('.h5p-instructions-root').length ||
+        ($target.parent().length && $target.parent().children('.h5p-instructions-root').length)
+      ) {
         instance.trigger('resize');
         return;
       }
