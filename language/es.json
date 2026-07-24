@@ -541,7 +541,7 @@
           ]
         },
         {
-          "label": "Colores de texto",
+          "label": "Texto",
           "fields": [
             {
               "label": "Color de texto de contexto"

@@ -5,9 +5,9 @@ Fork CFRD de **H5P.SortParagraphs** (upstream 0.11.16, `coreApi` 1.23, Lumi).
 | Campo | Valor |
 |-------|-------|
 | `machineName` | `H5P.SortParagraphsCFRD` |
-| Versión actual | **1.0.7** |
+| Versión actual | **1.0.25** |
 | Constructor JS | `H5P.SortParagraphsCFRD` |
-| Editor | `semantics.json` + widgets upstream (`H5PEditor.RangeList`, `H5PEditor.ShowWhen`, `H5PEditor.ColorSelector`) — sin editor dedicado |
+| Editor | `semantics.json` + widgets (`H5PEditor.RangeList`, `H5PEditor.ShowWhen`, `H5PEditor.ColorSelectorCFRD`) — sin editor dedicado |
 | Rama git | `sort-paragraphs-cfrd-1.0.0` |
 
 ## Características CFRD (1.0.x)
