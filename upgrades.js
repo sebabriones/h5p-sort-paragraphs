@@ -169,6 +169,211 @@ H5PUpgrades['H5P.SortParagraphsCFRD'] = (function () {
 
           finished(null, parameters);
         },
+
+        /**
+         * Move active paragraph colors into paragraphColors; drop target stays in paragraphInteraction.
+         */
+        28: function (parameters, finished) {
+          var appearance;
+          var interaction;
+          var paragraphs;
+          var keys = ['activeBackground', 'activeTextColor', 'activeBorderColor'];
+          var i;
+          var key;
+
+          if (parameters && parameters.appearance && typeof parameters.appearance === 'object') {
+            appearance = parameters.appearance;
+            interaction = appearance.paragraphInteraction || {};
+            paragraphs = appearance.paragraphColors || {};
+
+            for (i = 0; i < keys.length; i++) {
+              key = keys[i];
+              if (
+                (paragraphs[key] === undefined || paragraphs[key] === null || paragraphs[key] === '') &&
+                interaction[key] !== undefined &&
+                interaction[key] !== null &&
+                interaction[key] !== ''
+              ) {
+                paragraphs[key] = interaction[key];
+              }
+              if (Object.prototype.hasOwnProperty.call(interaction, key)) {
+                delete interaction[key];
+              }
+            }
+
+            appearance.paragraphColors = paragraphs;
+            appearance.paragraphInteraction = interaction;
+          }
+
+          finished(null, parameters);
+        },
+
+        /**
+         * Nest paragraphColors by state (normal/hover/active); migrate transparent/rgba borders to useBorder.
+         */
+        29: function (parameters, finished) {
+          var appearance;
+          var paragraphs;
+          var interaction;
+          var next;
+          var isInvisibleColor;
+          var migrateBorder;
+          var pickValue;
+          var hasNestedState;
+
+          isInvisibleColor = function (color) {
+            var value;
+
+            if (color === undefined || color === null || color === '') {
+              return true;
+            }
+
+            value = String(color).trim().toLowerCase();
+
+            if (value === 'transparent') {
+              return true;
+            }
+
+            return /^rgba?\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*0(?:\.0+)?\s*\)$/i.test(value);
+          };
+
+          pickValue = function () {
+            var i;
+            var value;
+
+            for (i = 0; i < arguments.length; i++) {
+              value = arguments[i];
+              if (value !== undefined && value !== null && value !== '') {
+                return value;
+              }
+            }
+
+            return undefined;
+          };
+
+          migrateBorder = function (state, legacyColor, defaultUseBorder, defaultColor) {
+            var useBorder;
+            var borderColor;
+
+            if (state.useBorder === true || state.useBorder === false) {
+              useBorder = state.useBorder;
+              borderColor = state.borderColor;
+            }
+            else if (!isInvisibleColor(state.borderColor)) {
+              useBorder = true;
+              borderColor = state.borderColor;
+            }
+            else if (legacyColor !== undefined && legacyColor !== null && legacyColor !== '') {
+              useBorder = !isInvisibleColor(legacyColor);
+              borderColor = isInvisibleColor(legacyColor) ? defaultColor : legacyColor;
+            }
+            else {
+              useBorder = defaultUseBorder;
+              borderColor = defaultColor;
+            }
+
+            state.useBorder = useBorder;
+            if (useBorder) {
+              state.borderColor = borderColor || defaultColor;
+            }
+            else if (state.borderColor === undefined || isInvisibleColor(state.borderColor)) {
+              state.borderColor = defaultColor;
+            }
+
+            return state;
+          };
+
+          hasNestedState = function (group, name) {
+            var state = group && group[name];
+            return !!(state && typeof state === 'object' && (
+              state.background !== undefined ||
+              state.useGradientBackground !== undefined ||
+              state.gradientBackground !== undefined ||
+              state.text !== undefined ||
+              state.useBorder !== undefined ||
+              state.borderColor !== undefined
+            ));
+          };
+
+          if (parameters && parameters.appearance && typeof parameters.appearance === 'object') {
+            appearance = parameters.appearance;
+            paragraphs = appearance.paragraphColors || {};
+            interaction = appearance.paragraphInteraction || {};
+            next = {};
+
+            if (paragraphs.borderRadius !== undefined) {
+              next.borderRadius = paragraphs.borderRadius;
+            }
+
+            if (hasNestedState(paragraphs, 'normal')) {
+              next.normal = paragraphs.normal;
+            }
+            else {
+              next.normal = {
+                useGradientBackground: paragraphs.useGradientBackground,
+                background: paragraphs.background,
+                gradientBackground: paragraphs.gradientBackground,
+                text: paragraphs.text
+              };
+            }
+            next.normal = migrateBorder(next.normal || {}, paragraphs.borderColor, false, '#999999');
+
+            if (hasNestedState(paragraphs, 'hover')) {
+              next.hover = paragraphs.hover;
+            }
+            else {
+              next.hover = {
+                useGradientBackground: paragraphs.useHoverGradientBackground,
+                background: paragraphs.hoverBackground,
+                gradientBackground: paragraphs.hoverGradientBackground,
+                text: paragraphs.hoverText
+              };
+            }
+            next.hover = migrateBorder(next.hover || {}, paragraphs.hoverBorderColor, false, '#999999');
+
+            if (hasNestedState(paragraphs, 'active')) {
+              next.active = paragraphs.active;
+            }
+            else {
+              next.active = {
+                useGradientBackground: paragraphs.useActiveGradientBackground,
+                background: pickValue(paragraphs.activeBackground, interaction.activeBackground),
+                gradientBackground: paragraphs.activeGradientBackground,
+                text: pickValue(paragraphs.activeTextColor, interaction.activeTextColor)
+              };
+            }
+            next.active = migrateBorder(
+              next.active || {},
+              pickValue(paragraphs.activeBorderColor, interaction.activeBorderColor),
+              true,
+              '#0825ff'
+            );
+
+            [
+              'useGradientBackground', 'background', 'gradientBackground', 'text',
+              'useHoverGradientBackground', 'hoverBackground', 'hoverGradientBackground', 'hoverText',
+              'borderColor', 'hoverBorderColor',
+              'activeBackground', 'activeTextColor', 'activeBorderColor',
+              'useActiveGradientBackground', 'activeGradientBackground',
+              'useBorder', 'useHoverBorder', 'useActiveBorder'
+            ].forEach(function (key) {
+              if (Object.prototype.hasOwnProperty.call(paragraphs, key)) {
+                delete paragraphs[key];
+              }
+            });
+
+            ['activeBackground', 'activeTextColor', 'activeBorderColor'].forEach(function (key) {
+              if (Object.prototype.hasOwnProperty.call(interaction, key)) {
+                delete interaction[key];
+              }
+            });
+
+            appearance.paragraphColors = next;
+            appearance.paragraphInteraction = interaction;
+          }
+
+          finished(null, parameters);
+        },
       },
     },
   };

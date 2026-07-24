@@ -526,13 +526,110 @@
           "label": "Colores de párrafos",
           "fields": [
             {
-              "label": "Color de fondo de párrafos"
+              "label": "Normal",
+              "fields": [
+                {
+                  "label": "Usar fondo en degradado"
+                },
+                {
+                  "label": "Color de fondo"
+                },
+                {
+                  "label": "Fondo en degradado",
+                  "fields": [
+                    {
+                      "label": "Ángulo del degradado",
+                      "description": "Dirección en grados (0 = hacia arriba, 180 = hacia abajo)."
+                    },
+                    {
+                      "label": "Color inicial del degradado"
+                    },
+                    {
+                      "label": "Color final del degradado"
+                    }
+                  ]
+                },
+                {
+                  "label": "Color de texto"
+                },
+                {
+                  "label": "Usar borde"
+                },
+                {
+                  "label": "Color de borde"
+                }
+              ]
             },
             {
-              "label": "Color de fondo de párrafos al pasar el cursor"
+              "label": "Al pasar el cursor",
+              "fields": [
+                {
+                  "label": "Usar fondo en degradado"
+                },
+                {
+                  "label": "Color de fondo"
+                },
+                {
+                  "label": "Fondo en degradado",
+                  "fields": [
+                    {
+                      "label": "Ángulo del degradado",
+                      "description": "Dirección en grados (0 = hacia arriba, 180 = hacia abajo)."
+                    },
+                    {
+                      "label": "Color inicial del degradado"
+                    },
+                    {
+                      "label": "Color final del degradado"
+                    }
+                  ]
+                },
+                {
+                  "label": "Color de texto"
+                },
+                {
+                  "label": "Usar borde"
+                },
+                {
+                  "label": "Color de borde"
+                }
+              ]
             },
             {
-              "label": "Color de texto de párrafos"
+              "label": "Activo (seleccionado)",
+              "description": "Cuando un párrafo está seleccionado por clic o resaltado al reordenar.",
+              "fields": [
+                {
+                  "label": "Usar fondo en degradado"
+                },
+                {
+                  "label": "Color de fondo"
+                },
+                {
+                  "label": "Fondo en degradado",
+                  "fields": [
+                    {
+                      "label": "Ángulo del degradado",
+                      "description": "Dirección en grados (0 = hacia arriba, 180 = hacia abajo)."
+                    },
+                    {
+                      "label": "Color inicial del degradado"
+                    },
+                    {
+                      "label": "Color final del degradado"
+                    }
+                  ]
+                },
+                {
+                  "label": "Color de texto"
+                },
+                {
+                  "label": "Usar borde"
+                },
+                {
+                  "label": "Color de borde"
+                }
+              ]
             },
             {
               "label": "Radio de borde de párrafos",
@@ -552,10 +649,32 @@
           "label": "Colores de respuesta correcta",
           "fields": [
             {
+              "label": "Usar fondo en degradado"
+            },
+            {
               "label": "Color de fondo de párrafo correcto"
             },
             {
+              "label": "Fondo en degradado",
+              "fields": [
+                {
+                  "label": "Ángulo del degradado",
+                  "description": "Dirección en grados (0 = hacia arriba, 180 = hacia abajo)."
+                },
+                {
+                  "label": "Color inicial del degradado"
+                },
+                {
+                  "label": "Color final del degradado"
+                }
+              ]
+            },
+            {
               "label": "Color de texto de párrafo correcto"
+            },
+            {
+              "label": "Color de borde de párrafo correcto",
+              "description": "Si está vacío, usa el color de fondo plano o el inicio del degradado."
             }
           ]
         },
@@ -563,32 +682,44 @@
           "label": "Colores de respuesta incorrecta",
           "fields": [
             {
+              "label": "Usar fondo en degradado"
+            },
+            {
               "label": "Color de fondo de párrafo incorrecto"
             },
             {
+              "label": "Fondo en degradado",
+              "fields": [
+                {
+                  "label": "Ángulo del degradado",
+                  "description": "Dirección en grados (0 = hacia arriba, 180 = hacia abajo)."
+                },
+                {
+                  "label": "Color inicial del degradado"
+                },
+                {
+                  "label": "Color final del degradado"
+                }
+              ]
+            },
+            {
               "label": "Color de texto de párrafo incorrecto"
+            },
+            {
+              "label": "Color de borde de párrafo incorrecto",
+              "description": "Si está vacío, usa el color de fondo plano o el inicio del degradado."
             }
           ]
         },
         {
           "label": "Destino al reordenar",
-          "description": "Colores y borde del espacio vacío y de la posición resaltada al mover párrafos.",
+          "description": "Colores y borde del espacio vacío al mover párrafos.",
           "fields": [
             {
               "label": "Color de fondo del destino"
             },
             {
-              "label": "Color de fondo del párrafo activo",
-              "description": "Fondo cuando un párrafo está seleccionado o es el destino al soltar."
-            },
-            {
-              "label": "Color de texto del párrafo activo"
-            },
-            {
               "label": "Color del borde del destino"
-            },
-            {
-              "label": "Color del borde del párrafo activo"
             },
             {
               "label": "Estilo del borde",
@@ -606,7 +737,7 @@
             },
             {
               "label": "Grosor del borde",
-              "description": "Grosor en unidades em."
+              "description": "Grosor en unidades em. También se usa en el borde del párrafo activo."
             }
           ]
         },

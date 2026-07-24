@@ -8,11 +8,16 @@
   --sp-paragraph-bg: #dddddd;
   --sp-paragraph-hover-bg: #ececec;
   --sp-paragraph-color: #333333;
+  --sp-paragraph-hover-color: #333333;
+  --sp-paragraph-border-color: transparent;
+  --sp-paragraph-hover-border-color: transparent;
   --sp-paragraph-border-radius: 0.37em;
   --sp-context-color: #555555;
   --sp-correct-bg: #b6e4ce;
+  --sp-correct-border-color: #b6e4ce;
   --sp-correct-color: #255c41;
   --sp-wrong-bg: #fbd7d8;
+  --sp-wrong-border-color: #fbd7d8;
   --sp-wrong-color: #b71c1c;
   --sp-drop-bg: #c7ceff;
   --sp-drop-border-color: #042cff;
@@ -230,11 +235,13 @@
 .h5p-sp-play-area .h5p-sort-paragraphs-paragraph-container :is(p, div, span, li, strong, em, code, pre, ul, ol) {
   font-size: inherit !important;
   line-height: inherit;
+  color: inherit !important;
 }
 
 .h5p-sp-play-area .h5p-sp-context-text :is(h2, h3),
 .h5p-sp-play-area .h5p-sort-paragraphs-paragraph-container :is(h2, h3) {
   line-height: inherit;
+  color: inherit !important;
 }
 
 .h5p-sp-play-area .h5p-sp-context-text h2,
@@ -439,8 +446,8 @@
   }
 
   .h5p-sort-paragraphs-paragraph {
-    background-color: var(--sp-paragraph-bg);
-    border-color: transparent;
+    background: var(--sp-paragraph-bg);
+    border-color: var(--sp-paragraph-border-color);
     border-radius: var(--sp-paragraph-border-radius);
     border-style: solid;
     border-width: .25em;
@@ -481,7 +488,9 @@
     }
 
     &:not(.h5p-sort-paragraphs-disabled):not(.h5p-sort-paragraphs-correct):not(.h5p-sort-paragraphs-wrong):hover {
-      background-color: var(--sp-paragraph-hover-bg);
+      background: var(--sp-paragraph-hover-bg);
+      border-color: var(--sp-paragraph-hover-border-color);
+      color: var(--sp-paragraph-hover-color);
     }
 
     &.h5p-sort-paragraphs-over, &.h5p-sort-paragraphs-selected {
@@ -500,7 +509,7 @@
 
     &.h5p-sort-paragraphs-correct {
       background: var(--sp-correct-bg);
-      border-color: var(--sp-correct-bg);
+      border-color: var(--sp-correct-border-color);
       box-shadow: 0 0.1em 0 main.$color-correct-box-shadow;
       color: var(--sp-correct-color);
 
@@ -516,7 +525,7 @@
 
     &.h5p-sort-paragraphs-wrong {
       background: var(--sp-wrong-bg);
-      border-color: var(--sp-wrong-bg);
+      border-color: var(--sp-wrong-border-color);
       box-shadow: 0 0.1em 0 main.$color-wrong-box-shadow;
       color: var(--sp-wrong-color);
 

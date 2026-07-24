@@ -45,7 +45,7 @@ class Util {
   }
 
   /**
-   * Remove inline font-size/line-height so play-area scaling controls typography.
+   * Remove inline font-size/line-height/color so appearance and play-area scaling control typography.
    * @param {string} html
    * @returns {string}
    */
@@ -60,6 +60,7 @@ class Util {
     styled.forEach((element) => {
       element.style.removeProperty('font-size');
       element.style.removeProperty('line-height');
+      element.style.removeProperty('color');
 
       if (!element.getAttribute('style')?.trim()) {
         element.removeAttribute('style');

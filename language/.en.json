@@ -517,13 +517,110 @@
           "label": "Paragraph colors",
           "fields": [
             {
-              "label": "Paragraph background color"
+              "label": "Normal",
+              "fields": [
+                {
+                  "label": "Use gradient background"
+                },
+                {
+                  "label": "Background color"
+                },
+                {
+                  "label": "Gradient background",
+                  "fields": [
+                    {
+                      "label": "Gradient angle",
+                      "description": "Direction in degrees (0 = upward, 180 = downward)."
+                    },
+                    {
+                      "label": "Gradient start color"
+                    },
+                    {
+                      "label": "Gradient end color"
+                    }
+                  ]
+                },
+                {
+                  "label": "Text color"
+                },
+                {
+                  "label": "Use border"
+                },
+                {
+                  "label": "Border color"
+                }
+              ]
             },
             {
-              "label": "Paragraph hover background color"
+              "label": "Hover",
+              "fields": [
+                {
+                  "label": "Use gradient background"
+                },
+                {
+                  "label": "Background color"
+                },
+                {
+                  "label": "Gradient background",
+                  "fields": [
+                    {
+                      "label": "Gradient angle",
+                      "description": "Direction in degrees (0 = upward, 180 = downward)."
+                    },
+                    {
+                      "label": "Gradient start color"
+                    },
+                    {
+                      "label": "Gradient end color"
+                    }
+                  ]
+                },
+                {
+                  "label": "Text color"
+                },
+                {
+                  "label": "Use border"
+                },
+                {
+                  "label": "Border color"
+                }
+              ]
             },
             {
-              "label": "Paragraph text color"
+              "label": "Active (selected)",
+              "description": "When a paragraph is selected by click or highlighted while reordering.",
+              "fields": [
+                {
+                  "label": "Use gradient background"
+                },
+                {
+                  "label": "Background color"
+                },
+                {
+                  "label": "Gradient background",
+                  "fields": [
+                    {
+                      "label": "Gradient angle",
+                      "description": "Direction in degrees (0 = upward, 180 = downward)."
+                    },
+                    {
+                      "label": "Gradient start color"
+                    },
+                    {
+                      "label": "Gradient end color"
+                    }
+                  ]
+                },
+                {
+                  "label": "Text color"
+                },
+                {
+                  "label": "Use border"
+                },
+                {
+                  "label": "Border color"
+                }
+              ]
             },
             {
               "label": "Paragraph border radius",
@@ -543,10 +640,32 @@
           "label": "Correct answer colors",
           "fields": [
             {
+              "label": "Use gradient background"
+            },
+            {
               "label": "Correct paragraph background color"
             },
             {
+              "label": "Gradient background",
+              "fields": [
+                {
+                  "label": "Gradient angle",
+                  "description": "Direction in degrees (0 = upward, 180 = downward)."
+                },
+                {
+                  "label": "Gradient start color"
+                },
+                {
+                  "label": "Gradient end color"
+                }
+              ]
+            },
+            {
               "label": "Correct paragraph text color"
+            },
+            {
+              "label": "Correct paragraph border color",
+              "description": "Defaults to the solid background or gradient start color when empty."
             }
           ]
         },
@@ -554,32 +673,44 @@
           "label": "Wrong answer colors",
           "fields": [
             {
+              "label": "Use gradient background"
+            },
+            {
               "label": "Wrong paragraph background color"
             },
             {
+              "label": "Gradient background",
+              "fields": [
+                {
+                  "label": "Gradient angle",
+                  "description": "Direction in degrees (0 = upward, 180 = downward)."
+                },
+                {
+                  "label": "Gradient start color"
+                },
+                {
+                  "label": "Gradient end color"
+                }
+              ]
+            },
+            {
               "label": "Wrong paragraph text color"
+            },
+            {
+              "label": "Wrong paragraph border color",
+              "description": "Defaults to the solid background or gradient start color when empty."
             }
           ]
         },
         {
           "label": "Drop target (while reordering)",
-          "description": "Colors and border for the placeholder and the highlighted drop position while moving paragraphs.",
+          "description": "Colors and border for the empty placeholder while moving paragraphs.",
           "fields": [
             {
               "label": "Drop target background color"
             },
             {
-              "label": "Active paragraph background color",
-              "description": "Background when a paragraph is selected or hovered as drop target."
-            },
-            {
-              "label": "Active paragraph text color"
-            },
-            {
               "label": "Drop target border color"
-            },
-            {
-              "label": "Active paragraph border color"
             },
             {
               "label": "Border style",
@@ -597,7 +728,7 @@
             },
             {
               "label": "Border width",
-              "description": "Thickness in em units."
+              "description": "Thickness in em units. Also used for the active paragraph highlight border."
             }
           ]
         },

@@ -1369,37 +1369,371 @@
         "optional": true,
         "fields": [
           {
-            "name": "background",
-            "type": "text",
-            "widget": "colorSelector",
-            "label": "Paragraph background color",
-            "default": "#dddddd",
+            "name": "normal",
+            "type": "group",
+            "label": "Normal",
+            "importance": "low",
             "optional": true,
-            "spectrum": {
-              "showInput": true
-            }
+            "fields": [
+              {
+                "name": "useGradientBackground",
+                "type": "boolean",
+                "label": "Use gradient background",
+                "default": false
+              },
+              {
+                "name": "background",
+                "type": "text",
+                "label": "Background color",
+                "default": "#dddddd",
+                "optional": true,
+                "spectrum": {
+                  "showInput": true
+                },
+                "widget": "showWhen",
+                "showWhen": {
+                  "widget": "colorSelector",
+                  "rules": [
+                    {
+                      "field": "useGradientBackground",
+                      "equals": false
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "gradientBackground",
+                "type": "group",
+                "label": "Gradient background",
+                "importance": "low",
+                "widget": "showWhen",
+                "showWhen": {
+                  "rules": [
+                    {
+                      "field": "useGradientBackground",
+                      "equals": true
+                    }
+                  ]
+                },
+                "fields": [
+                  {
+                    "name": "angle",
+                    "type": "number",
+                    "label": "Gradient angle",
+                    "description": "Direction in degrees (0 = upward, 180 = downward).",
+                    "default": 180,
+                    "min": 0,
+                    "max": 360,
+                    "step": 1,
+                    "unit": "°"
+                  },
+                  {
+                    "name": "colorStart",
+                    "type": "text",
+                    "widget": "colorSelector",
+                    "label": "Gradient start color",
+                    "default": "#dddddd",
+                    "optional": true,
+                    "spectrum": {
+                      "showInput": true
+                    }
+                  },
+                  {
+                    "name": "colorEnd",
+                    "type": "text",
+                    "widget": "colorSelector",
+                    "label": "Gradient end color",
+                    "default": "#dddddd",
+                    "optional": true,
+                    "spectrum": {
+                      "showInput": true
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "text",
+                "type": "text",
+                "widget": "colorSelector",
+                "label": "Text color",
+                "default": "#333333",
+                "optional": true,
+                "spectrum": {
+                  "showInput": true
+                }
+              },
+              {
+                "name": "useBorder",
+                "type": "boolean",
+                "label": "Use border",
+                "default": false
+              },
+              {
+                "name": "borderColor",
+                "type": "text",
+                "label": "Border color",
+                "default": "#999999",
+                "optional": true,
+                "spectrum": {
+                  "showInput": true
+                },
+                "widget": "showWhen",
+                "showWhen": {
+                  "widget": "colorSelector",
+                  "rules": [
+                    {
+                      "field": "useBorder",
+                      "equals": true
+                    }
+                  ]
+                }
+              }
+            ]
           },
           {
-            "name": "hoverBackground",
-            "type": "text",
-            "widget": "colorSelector",
-            "label": "Paragraph hover background color",
-            "default": "#ececec",
+            "name": "hover",
+            "type": "group",
+            "label": "Hover",
+            "importance": "low",
             "optional": true,
-            "spectrum": {
-              "showInput": true
-            }
+            "fields": [
+              {
+                "name": "useGradientBackground",
+                "type": "boolean",
+                "label": "Use gradient background",
+                "default": false
+              },
+              {
+                "name": "background",
+                "type": "text",
+                "label": "Background color",
+                "default": "#ececec",
+                "optional": true,
+                "spectrum": {
+                  "showInput": true
+                },
+                "widget": "showWhen",
+                "showWhen": {
+                  "widget": "colorSelector",
+                  "rules": [
+                    {
+                      "field": "useGradientBackground",
+                      "equals": false
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "gradientBackground",
+                "type": "group",
+                "label": "Gradient background",
+                "importance": "low",
+                "widget": "showWhen",
+                "showWhen": {
+                  "rules": [
+                    {
+                      "field": "useGradientBackground",
+                      "equals": true
+                    }
+                  ]
+                },
+                "fields": [
+                  {
+                    "name": "angle",
+                    "type": "number",
+                    "label": "Gradient angle",
+                    "description": "Direction in degrees (0 = upward, 180 = downward).",
+                    "default": 180,
+                    "min": 0,
+                    "max": 360,
+                    "step": 1,
+                    "unit": "°"
+                  },
+                  {
+                    "name": "colorStart",
+                    "type": "text",
+                    "widget": "colorSelector",
+                    "label": "Gradient start color",
+                    "default": "#ececec",
+                    "optional": true,
+                    "spectrum": {
+                      "showInput": true
+                    }
+                  },
+                  {
+                    "name": "colorEnd",
+                    "type": "text",
+                    "widget": "colorSelector",
+                    "label": "Gradient end color",
+                    "default": "#ececec",
+                    "optional": true,
+                    "spectrum": {
+                      "showInput": true
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "text",
+                "type": "text",
+                "widget": "colorSelector",
+                "label": "Text color",
+                "default": "#333333",
+                "optional": true,
+                "spectrum": {
+                  "showInput": true
+                }
+              },
+              {
+                "name": "useBorder",
+                "type": "boolean",
+                "label": "Use border",
+                "default": false
+              },
+              {
+                "name": "borderColor",
+                "type": "text",
+                "label": "Border color",
+                "default": "#999999",
+                "optional": true,
+                "spectrum": {
+                  "showInput": true
+                },
+                "widget": "showWhen",
+                "showWhen": {
+                  "widget": "colorSelector",
+                  "rules": [
+                    {
+                      "field": "useBorder",
+                      "equals": true
+                    }
+                  ]
+                }
+              }
+            ]
           },
           {
-            "name": "text",
-            "type": "text",
-            "widget": "colorSelector",
-            "label": "Paragraph text color",
-            "default": "#333333",
+            "name": "active",
+            "type": "group",
+            "label": "Active (selected)",
+            "importance": "low",
             "optional": true,
-            "spectrum": {
-              "showInput": true
-            }
+            "description": "When a paragraph is selected by click or highlighted while reordering.",
+            "fields": [
+              {
+                "name": "useGradientBackground",
+                "type": "boolean",
+                "label": "Use gradient background",
+                "default": false
+              },
+              {
+                "name": "background",
+                "type": "text",
+                "label": "Background color",
+                "default": "#e9edfe",
+                "optional": true,
+                "spectrum": {
+                  "showInput": true
+                },
+                "widget": "showWhen",
+                "showWhen": {
+                  "widget": "colorSelector",
+                  "rules": [
+                    {
+                      "field": "useGradientBackground",
+                      "equals": false
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "gradientBackground",
+                "type": "group",
+                "label": "Gradient background",
+                "importance": "low",
+                "widget": "showWhen",
+                "showWhen": {
+                  "rules": [
+                    {
+                      "field": "useGradientBackground",
+                      "equals": true
+                    }
+                  ]
+                },
+                "fields": [
+                  {
+                    "name": "angle",
+                    "type": "number",
+                    "label": "Gradient angle",
+                    "description": "Direction in degrees (0 = upward, 180 = downward).",
+                    "default": 180,
+                    "min": 0,
+                    "max": 360,
+                    "step": 1,
+                    "unit": "°"
+                  },
+                  {
+                    "name": "colorStart",
+                    "type": "text",
+                    "widget": "colorSelector",
+                    "label": "Gradient start color",
+                    "default": "#e9edfe",
+                    "optional": true,
+                    "spectrum": {
+                      "showInput": true
+                    }
+                  },
+                  {
+                    "name": "colorEnd",
+                    "type": "text",
+                    "widget": "colorSelector",
+                    "label": "Gradient end color",
+                    "default": "#e9edfe",
+                    "optional": true,
+                    "spectrum": {
+                      "showInput": true
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "text",
+                "type": "text",
+                "widget": "colorSelector",
+                "label": "Text color",
+                "default": "#3d4eff",
+                "optional": true,
+                "spectrum": {
+                  "showInput": true
+                }
+              },
+              {
+                "name": "useBorder",
+                "type": "boolean",
+                "label": "Use border",
+                "default": true
+              },
+              {
+                "name": "borderColor",
+                "type": "text",
+                "label": "Border color",
+                "default": "#0825ff",
+                "optional": true,
+                "spectrum": {
+                  "showInput": true
+                },
+                "widget": "showWhen",
+                "showWhen": {
+                  "widget": "colorSelector",
+                  "rules": [
+                    {
+                      "field": "useBorder",
+                      "equals": true
+                    }
+                  ]
+                }
+              }
+            ]
           },
           {
             "name": "borderRadius",
@@ -1442,15 +1776,80 @@
         "optional": true,
         "fields": [
           {
+            "name": "useGradientBackground",
+            "type": "boolean",
+            "label": "Use gradient background",
+            "default": false
+          },
+          {
             "name": "background",
             "type": "text",
-            "widget": "colorSelector",
             "label": "Correct paragraph background color",
             "default": "#b6e4ce",
             "optional": true,
             "spectrum": {
               "showInput": true
+            },
+            "widget": "showWhen",
+            "showWhen": {
+              "widget": "colorSelector",
+              "rules": [
+                {
+                  "field": "useGradientBackground",
+                  "equals": false
+                }
+              ]
             }
+          },
+          {
+            "name": "gradientBackground",
+            "type": "group",
+            "label": "Gradient background",
+            "importance": "low",
+            "widget": "showWhen",
+            "showWhen": {
+              "rules": [
+                {
+                  "field": "useGradientBackground",
+                  "equals": true
+                }
+              ]
+            },
+            "fields": [
+              {
+                "name": "angle",
+                "type": "number",
+                "label": "Gradient angle",
+                "description": "Direction in degrees (0 = upward, 180 = downward).",
+                "default": 180,
+                "min": 0,
+                "max": 360,
+                "step": 1,
+                "unit": "°"
+              },
+              {
+                "name": "colorStart",
+                "type": "text",
+                "widget": "colorSelector",
+                "label": "Gradient start color",
+                "default": "#b6e4ce",
+                "optional": true,
+                "spectrum": {
+                  "showInput": true
+                }
+              },
+              {
+                "name": "colorEnd",
+                "type": "text",
+                "widget": "colorSelector",
+                "label": "Gradient end color",
+                "default": "#b6e4ce",
+                "optional": true,
+                "spectrum": {
+                  "showInput": true
+                }
+              }
+            ]
           },
           {
             "name": "text",
@@ -1458,6 +1857,17 @@
             "widget": "colorSelector",
             "label": "Correct paragraph text color",
             "default": "#255c41",
+            "optional": true,
+            "spectrum": {
+              "showInput": true
+            }
+          },
+          {
+            "name": "borderColor",
+            "type": "text",
+            "widget": "colorSelector",
+            "label": "Correct paragraph border color",
+            "description": "Defaults to the solid background or gradient start color when empty.",
             "optional": true,
             "spectrum": {
               "showInput": true
@@ -1473,15 +1883,80 @@
         "optional": true,
         "fields": [
           {
+            "name": "useGradientBackground",
+            "type": "boolean",
+            "label": "Use gradient background",
+            "default": false
+          },
+          {
             "name": "background",
             "type": "text",
-            "widget": "colorSelector",
             "label": "Wrong paragraph background color",
             "default": "#fbd7d8",
             "optional": true,
             "spectrum": {
               "showInput": true
+            },
+            "widget": "showWhen",
+            "showWhen": {
+              "widget": "colorSelector",
+              "rules": [
+                {
+                  "field": "useGradientBackground",
+                  "equals": false
+                }
+              ]
             }
+          },
+          {
+            "name": "gradientBackground",
+            "type": "group",
+            "label": "Gradient background",
+            "importance": "low",
+            "widget": "showWhen",
+            "showWhen": {
+              "rules": [
+                {
+                  "field": "useGradientBackground",
+                  "equals": true
+                }
+              ]
+            },
+            "fields": [
+              {
+                "name": "angle",
+                "type": "number",
+                "label": "Gradient angle",
+                "description": "Direction in degrees (0 = upward, 180 = downward).",
+                "default": 180,
+                "min": 0,
+                "max": 360,
+                "step": 1,
+                "unit": "°"
+              },
+              {
+                "name": "colorStart",
+                "type": "text",
+                "widget": "colorSelector",
+                "label": "Gradient start color",
+                "default": "#fbd7d8",
+                "optional": true,
+                "spectrum": {
+                  "showInput": true
+                }
+              },
+              {
+                "name": "colorEnd",
+                "type": "text",
+                "widget": "colorSelector",
+                "label": "Gradient end color",
+                "default": "#fbd7d8",
+                "optional": true,
+                "spectrum": {
+                  "showInput": true
+                }
+              }
+            ]
           },
           {
             "name": "text",
@@ -1489,6 +1964,17 @@
             "widget": "colorSelector",
             "label": "Wrong paragraph text color",
             "default": "#b71c1c",
+            "optional": true,
+            "spectrum": {
+              "showInput": true
+            }
+          },
+          {
+            "name": "borderColor",
+            "type": "text",
+            "widget": "colorSelector",
+            "label": "Wrong paragraph border color",
+            "description": "Defaults to the solid background or gradient start color when empty.",
             "optional": true,
             "spectrum": {
               "showInput": true
@@ -1502,7 +1988,7 @@
         "label": "Drop target (while reordering)",
         "importance": "low",
         "optional": true,
-        "description": "Colors and border for the placeholder and the highlighted drop position while moving paragraphs.",
+        "description": "Colors and border for the empty placeholder while moving paragraphs.",
         "fields": [
           {
             "name": "background",
@@ -1516,45 +2002,11 @@
             }
           },
           {
-            "name": "activeBackground",
-            "type": "text",
-            "widget": "colorSelector",
-            "label": "Active paragraph background color",
-            "description": "Background when a paragraph is selected or hovered as drop target.",
-            "default": "#e9edfe",
-            "optional": true,
-            "spectrum": {
-              "showInput": true
-            }
-          },
-          {
-            "name": "activeTextColor",
-            "type": "text",
-            "widget": "colorSelector",
-            "label": "Active paragraph text color",
-            "default": "#3d4eff",
-            "optional": true,
-            "spectrum": {
-              "showInput": true
-            }
-          },
-          {
             "name": "borderColor",
             "type": "text",
             "widget": "colorSelector",
             "label": "Drop target border color",
             "default": "#042cff",
-            "optional": true,
-            "spectrum": {
-              "showInput": true
-            }
-          },
-          {
-            "name": "activeBorderColor",
-            "type": "text",
-            "widget": "colorSelector",
-            "label": "Active paragraph border color",
-            "default": "#0825ff",
             "optional": true,
             "spectrum": {
               "showInput": true
@@ -1584,7 +2036,7 @@
             "name": "borderWidth",
             "type": "number",
             "label": "Border width",
-            "description": "Thickness in em units.",
+            "description": "Thickness in em units. Also used for the active paragraph highlight border.",
             "default": 0.25,
             "min": 0,
             "max": 1,

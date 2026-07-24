@@ -424,7 +424,7 @@ export default class SortParagraphsContent {
   buildParagraph(text) {
     const paragraph = new SortParagraphsParagraph(
       {
-        text: text,
+        text: Util.stripInlineFontSize(text),
         l10n: this.params.l10n,
         options: {
           addButtonsForMovement: this.params.addButtonsForMovement,
