@@ -725,6 +725,17 @@
     border-radius: var(--sp-paragraph-border-radius);
     box-sizing: border-box;
   }
+
+  // While dragging, the custom preview has pointer-events: none, so the real
+  // cursor hits paragraphs underneath — keep their normal (non-hover) look.
+  .h5p-sort-paragraphs-content.h5p-sort-paragraphs-is-dragging {
+    .h5p-sort-paragraphs-paragraph:not(.h5p-sort-paragraphs-over):not(.h5p-sort-paragraphs-selected):hover {
+      background: var(--sp-paragraph-bg);
+      border-color: var(--sp-paragraph-border-color);
+      border-width: var(--sp-paragraph-border-width, 0);
+      color: var(--sp-paragraph-color);
+    }
+  }
 }
 
 /* Custom drag preview: solid or translucent under our control (not the native ghost). */

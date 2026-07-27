@@ -541,6 +541,7 @@ export default class SortParagraphsContent {
   handleDraggableDragStart(draggable) {
     this.oldOrder = this.getDraggablesOrder();
     this.draggedElement = draggable;
+    this.content.classList.add('h5p-sort-paragraphs-is-dragging');
 
     this.getDraggables().forEach((draggable) => {
       this.getParagraph(draggable).hideButtons();
@@ -594,6 +595,7 @@ export default class SortParagraphsContent {
     this.draggedElement = null;
     this.dropzoneElement = null;
     this.oldOrder = null;
+    this.content.classList.remove('h5p-sort-paragraphs-is-dragging');
   }
 
   /**
