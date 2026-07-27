@@ -491,10 +491,132 @@ export default class SortParagraphsParagraph {
    */
   resetDragging() {
     clearTimeout(this.placeholderTimeout);
+    this.destroyDragPreview();
     this.hidePlaceholder();
     this.show();
     this.showButtons();
     this.toggleEffect('over', false);
+    this.toggleEffect('ghosted', false);
+  }
+
+  /**
+   * Read configured drag opacity from play-area CSS variable.
+   * @returns {number}
+   */
+  getDragOpacity() {
+    const root = this.content.closest('.h5p-sp-play-area') || this.content;
+    const raw = window.getComputedStyle(root).getPropertyValue('--sp-paragraph-drag-opacity').trim();
+    const num = parseFloat(raw);
+
+    if (isNaN(num)) {
+      return 0.4;
+    }
+
+    return Math.max(0, Math.min(1, num));
+  }
+
+  /**
+   * Hide the native HTML5 drag ghost (always translucent in Chrome/Firefox).
+   * @param {DragEvent} event Drag start event.
+   */
+  hideNativeDragImage(event) {
+    const ghost = document.createElement('div');
+    ghost.classList.add('h5p-sort-paragraphs-native-drag-ghost');
+    ghost.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(ghost);
+    event.dataTransfer.setDragImage(ghost, 0, 0);
+
+    // Remove after the browser has captured the image.
+    window.setTimeout(() => {
+      if (ghost.parentNode) {
+        ghost.parentNode.removeChild(ghost);
+      }
+    }, 0);
+  }
+
+  /**
+   * Create a custom drag preview that respects configured opacity (including fully opaque).
+   * @param {DragEvent} event Drag start event.
+   */
+  createDragPreview(event) {
+    this.destroyDragPreview();
+
+    const rect = this.content.getBoundingClientRect();
+    const clientX = (this.pointerPosition && this.pointerPosition.x !== undefined) ?
+      this.pointerPosition.x :
+      event.clientX;
+    const clientY = (this.pointerPosition && this.pointerPosition.y !== undefined) ?
+      this.pointerPosition.y :
+      event.clientY;
+
+    this.dragPreviewOffset = {
+      x: clientX - rect.left,
+      y: clientY - rect.top,
+    };
+
+    this.dragPreview = this.content.cloneNode(true);
+    this.dragPreview.classList.add('h5p-sort-paragraphs-drag-preview');
+    this.dragPreview.classList.remove(
+      'h5p-sort-paragraphs-ghosted',
+      'h5p-sort-paragraphs-no-display',
+      'h5p-sort-paragraphs-over',
+      'h5p-sort-paragraphs-selected',
+    );
+    this.dragPreview.removeAttribute('draggable');
+    this.dragPreview.removeAttribute('tabindex');
+    this.dragPreview.setAttribute('aria-hidden', 'true');
+    this.dragPreview.style.width = `${rect.width}px`;
+    this.dragPreview.style.opacity = String(this.getDragOpacity());
+
+    // Mount inside the play area so CSS variables (colors, borders) still apply.
+    const mount = this.content.closest('.h5p-sp-play-area') ||
+      this.content.closest('.h5p-sort-paragraphs-cfrd') ||
+      document.body;
+    mount.appendChild(this.dragPreview);
+    this.moveDragPreview(clientX, clientY);
+
+    this.boundDragPreviewMove = (moveEvent) => {
+      if (!moveEvent.clientX && !moveEvent.clientY) {
+        return;
+      }
+
+      this.moveDragPreview(moveEvent.clientX, moveEvent.clientY);
+    };
+
+    document.addEventListener('drag', this.boundDragPreviewMove);
+    document.addEventListener('dragover', this.boundDragPreviewMove);
+  }
+
+  /**
+   * Position the custom drag preview under the pointer.
+   * @param {number} clientX
+   * @param {number} clientY
+   */
+  moveDragPreview(clientX, clientY) {
+    if (!this.dragPreview || !this.dragPreviewOffset) {
+      return;
+    }
+
+    this.dragPreview.style.left = `${clientX - this.dragPreviewOffset.x}px`;
+    this.dragPreview.style.top = `${clientY - this.dragPreviewOffset.y}px`;
+  }
+
+  /**
+   * Remove custom drag preview and listeners.
+   */
+  destroyDragPreview() {
+    if (this.boundDragPreviewMove) {
+      document.removeEventListener('drag', this.boundDragPreviewMove);
+      document.removeEventListener('dragover', this.boundDragPreviewMove);
+      this.boundDragPreviewMove = null;
+    }
+
+    if (this.dragPreview && this.dragPreview.parentNode) {
+      this.dragPreview.parentNode.removeChild(this.dragPreview);
+    }
+
+    this.dragPreview = null;
+    this.dragPreviewOffset = null;
   }
 
   /**
@@ -645,14 +767,12 @@ export default class SortParagraphsParagraph {
     this.toggleEffect('over', true);
     event.dataTransfer.effectAllowed = 'move';
 
-    // Workaround for Firefox that may scale the draggable down otherwise
-    event.dataTransfer.setDragImage(
-      this.content,
-      this.pointerPosition.x - this.content.getBoundingClientRect().left,
-      this.pointerPosition.y - this.content.getBoundingClientRect().top,
-    );
+    // Native drag ghosts are always translucent in Chrome/Firefox — hide them
+    // and follow the pointer with a custom preview that honors dragTransparency.
+    this.hideNativeDragImage(event);
+    this.createDragPreview(event);
 
-    // Will hide browser's draggable copy as well without timeout
+    // Will hide the source paragraph after the browser has started the drag.
     clearTimeout(this.placeholderTimeout);
     this.placeholderTimeout = setTimeout(() => {
       this.showPlaceholder();

@@ -2011,7 +2011,7 @@
         "label": "Drop target (while reordering)",
         "importance": "low",
         "optional": true,
-        "description": "Colors and border for the empty placeholder while moving paragraphs.",
+        "description": "Colors and border for the empty placeholder while moving paragraphs, and opacity of the dragged paragraph preview.",
         "fields": [
           {
             "name": "background",
@@ -2065,6 +2065,23 @@
             "max": 1,
             "decimals": 2,
             "unit": "em"
+          },
+          {
+            "name": "dragTransparency",
+            "type": "select",
+            "label": "Paragraph while dragging",
+            "description": "Transparent uses the original H5P-style opacity (0.4) on a custom drag preview. Not transparent keeps a solid preview (avoids the translucent native browser ghost).",
+            "default": "transparent",
+            "options": [
+              {
+                "value": "transparent",
+                "label": "Transparent"
+              },
+              {
+                "value": "opaque",
+                "label": "Not transparent"
+              }
+            ]
           }
         ]
       },

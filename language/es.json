@@ -722,7 +722,7 @@
         },
         {
           "label": "Destino al reordenar",
-          "description": "Colores y borde del espacio vacío al mover párrafos.",
+          "description": "Colores y borde del espacio vacío al mover párrafos, y opacidad de la vista previa al arrastrar.",
           "fields": [
             {
               "label": "Color de fondo del destino"
@@ -747,6 +747,18 @@
             {
               "label": "Grosor del borde",
               "description": "Grosor en unidades em. También se usa en el borde del párrafo activo."
+            },
+            {
+              "label": "Párrafo al arrastrar",
+              "description": "Transparente usa la opacidad estilo H5P original (0.4) en una vista previa propia. Sin transparencia deja la vista previa sólida (evita el fantasma semitransparente del navegador).",
+              "options": [
+                {
+                  "label": "Transparente"
+                },
+                {
+                  "label": "Sin transparencia"
+                }
+              ]
             }
           ]
         },

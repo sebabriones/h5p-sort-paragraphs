@@ -17,6 +17,7 @@
   --sp-context-color: #555555;
   --sp-paragraph-font-size: 1em;
   --sp-context-font-size: 1em;
+  --sp-paragraph-drag-opacity: 0.4;
   --sp-correct-bg: #b6e4ce;
   --sp-correct-border-color: #b6e4ce;
   --sp-correct-color: #255c41;
@@ -489,7 +490,7 @@
     }
 
     &.h5p-sort-paragraphs-ghosted {
-      opacity: 0.4;
+      opacity: var(--sp-paragraph-drag-opacity, 0.4);
     }
 
     &.h5p-sort-paragraphs-disabled {
@@ -724,6 +725,29 @@
     border-radius: var(--sp-paragraph-border-radius);
     box-sizing: border-box;
   }
+}
+
+/* Custom drag preview: solid or translucent under our control (not the native ghost). */
+.h5p-sort-paragraphs-drag-preview {
+  box-sizing: border-box;
+  margin: 0 !important;
+  pointer-events: none !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  cursor: grabbing;
+}
+
+/* Invisible capture target for setDragImage (hides the translucent OS/browser ghost). */
+.h5p-sort-paragraphs-native-drag-ghost {
+  height: 1px;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: -9999px;
+  width: 1px;
 }
 
 // Firefox would show focus on clicking a disabled paragraph

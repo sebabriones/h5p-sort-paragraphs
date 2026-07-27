@@ -19,6 +19,7 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
     contextText: '#555555',
     paragraphFontSize: 1,
     contextFontSize: 1,
+    paragraphDragOpacity: 0.4,
     correctBackground: '#b6e4ce',
     correctBorderColor: '#b6e4ce',
     correctText: '#255c41',
@@ -67,6 +68,7 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
     dropBackground: '--sp-drop-bg',
     dropBorderColor: '--sp-drop-border-color',
     dropBorderStyle: '--sp-drop-border-style',
+    paragraphDragOpacity: '--sp-paragraph-drag-opacity',
     activeBackground: '--sp-active-bg',
     activeTextColor: '--sp-active-color',
     activeBorderColor: '--sp-active-border-color',
@@ -385,6 +387,38 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
    * @returns {Object}
    */
   /**
+   * Resolve drag preview opacity from select (or legacy numeric dragOpacity).
+   * transparent → 0.4 (original H5P), opaque → 1.
+   *
+   * @param {Object} [interaction]
+   * @returns {number}
+   */
+  function resolveDragOpacity(interaction) {
+    var mode = interaction && interaction.dragTransparency;
+    var legacy;
+    var num;
+
+    if (mode === 'opaque') {
+      return 1;
+    }
+
+    if (mode === 'transparent') {
+      return APPEARANCE_DEFAULTS.paragraphDragOpacity;
+    }
+
+    // Legacy numeric field from 1.0.39.
+    legacy = interaction && interaction.dragOpacity;
+    if (legacy !== undefined && legacy !== null && legacy !== '') {
+      num = typeof legacy === 'number' ? legacy : parseFloat(String(legacy));
+      if (!isNaN(num) && num >= 0.85) {
+        return 1;
+      }
+    }
+
+    return APPEARANCE_DEFAULTS.paragraphDragOpacity;
+  }
+
+  /**
    * Normalize a font-size field to a unitless number (never "1em").
    *
    * @param {*} value
@@ -531,6 +565,7 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
       dropBorderColor: interaction.borderColor,
       dropBorderStyle: interaction.borderStyle,
       dropBorderWidth: interaction.borderWidth,
+      paragraphDragOpacity: resolveDragOpacity(interaction),
       activeBackground: resolveFill(active, {
         solidKey: 'background',
         fallbackSolid: APPEARANCE_DEFAULTS.activeBackground
