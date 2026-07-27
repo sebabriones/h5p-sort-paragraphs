@@ -374,6 +374,91 @@ H5PUpgrades['H5P.SortParagraphsCFRD'] = (function () {
 
           finished(null, parameters);
         },
+
+        /**
+         * textColors must be a group; migrate legacy bare color string to { context }.
+         */
+        32: function (parameters, finished) {
+          var appearance;
+          var textColors;
+
+          if (parameters && parameters.appearance && typeof parameters.appearance === 'object') {
+            appearance = parameters.appearance;
+            textColors = appearance.textColors;
+
+            if (typeof textColors === 'string') {
+              appearance.textColors = {
+                context: textColors,
+              };
+            }
+          }
+
+          finished(null, parameters);
+        },
+
+        /**
+         * Replace textColors with textStyle (contextColor + unitless font sizes with defaults).
+         * Breaks corrupted content where textColors was a bare color string.
+         */
+        33: function (parameters, finished) {
+          var appearance;
+          var legacy;
+          var style;
+          var next;
+          var parseEmNumber;
+
+          parseEmNumber = function (value, fallback) {
+            var parsed;
+
+            if (value === undefined || value === null || value === '') {
+              return fallback;
+            }
+
+            if (typeof value === 'number' && !isNaN(value)) {
+              return value;
+            }
+
+            parsed = parseFloat(String(value).replace(/em/gi, '').trim());
+            return isNaN(parsed) ? fallback : parsed;
+          };
+
+          if (parameters && parameters.appearance && typeof parameters.appearance === 'object') {
+            appearance = parameters.appearance;
+            legacy = appearance.textColors;
+            style = appearance.textStyle;
+            next = (style && typeof style === 'object') ? style : {};
+
+            if (typeof legacy === 'string' && legacy !== '') {
+              if (!next.contextColor) {
+                next.contextColor = legacy;
+              }
+            }
+            else if (legacy && typeof legacy === 'object') {
+              if (next.paragraphFontSize === undefined || next.paragraphFontSize === null || next.paragraphFontSize === '') {
+                next.paragraphFontSize = legacy.paragraphFontSize;
+              }
+              if (!next.contextColor) {
+                next.contextColor = legacy.contextColor || legacy.context;
+              }
+              if (next.contextFontSize === undefined || next.contextFontSize === null || next.contextFontSize === '') {
+                next.contextFontSize = legacy.contextFontSize;
+              }
+            }
+
+            next.paragraphFontSize = parseEmNumber(next.paragraphFontSize, 1);
+            next.contextFontSize = parseEmNumber(next.contextFontSize, 1);
+            next.contextColor = (next.contextColor && String(next.contextColor).trim()) || '#555555';
+
+            if (Object.prototype.hasOwnProperty.call(next, 'context')) {
+              delete next.context;
+            }
+
+            appearance.textStyle = next;
+            delete appearance.textColors;
+          }
+
+          finished(null, parameters);
+        },
       },
     },
   };

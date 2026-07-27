@@ -630,9 +630,18 @@
         },
         {
           "label": "Text",
+          "description": "Font sizes for paragraphs and context, and context text color. Sizes are stored as unitless numbers (for example 1, not 1em).",
           "fields": [
             {
+              "label": "Paragraph font size",
+              "description": "Text size relative to the play area (em). Stored as a number (default 1)."
+            },
+            {
               "label": "Context text color"
+            },
+            {
+              "label": "Context font size",
+              "description": "Text size relative to the play area (em). Stored as a number (default 1)."
             }
           ]
         },

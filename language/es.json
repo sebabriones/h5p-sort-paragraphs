@@ -639,9 +639,18 @@
         },
         {
           "label": "Texto",
+          "description": "Tamaños de letra de párrafos y contexto, y color de texto del contexto. Los tamaños se guardan como número sin unidad (por ejemplo 1, no 1em).",
           "fields": [
             {
+              "label": "Tamaño de letra de párrafos",
+              "description": "Tamaño del texto relativo al área de juego (em). Se guarda como número (predeterminado 1)."
+            },
+            {
               "label": "Color de texto de contexto"
+            },
+            {
+              "label": "Tamaño de letra del contexto",
+              "description": "Tamaño del texto relativo al área de juego (em). Se guarda como número (predeterminado 1)."
             }
           ]
         },

@@ -39,7 +39,9 @@ function SortParagraphsCFRD(params, contentId, extras) {
   self.contentId = contentId;
   self.extras = extras;
 
-  self.options = Util.extend({
+  // Deep-merge like Multi Choice / Single Choice (jQuery), so nested appearance
+  // numbers such as textColors.*FontSize are preserved from the editor.
+  self.options = H5P.jQuery.extend(true, {}, {
     instructions: {},
     context: {},
     paragraphs: [],

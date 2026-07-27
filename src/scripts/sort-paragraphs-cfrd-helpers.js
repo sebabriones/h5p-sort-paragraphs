@@ -340,7 +340,9 @@ export function scheduleContextImageAttach(instance) {
  * @param {object} instance
  */
 export function applyActionButtonAppearance(instance) {
-  const actionButtons = instance?.params?.appearance?.actionButtons;
+  const appearance = (instance && instance.options && instance.options.appearance) ||
+    (instance && instance.params && instance.params.appearance);
+  const actionButtons = appearance && appearance.actionButtons;
 
   if (!actionButtons || typeof instance.setActionButtonAppearance !== 'function') {
     return;
@@ -365,8 +367,11 @@ export function applyActivityAppearance(instance) {
     return;
   }
 
-  appearance = instance.params && instance.params.appearance;
-  overallFeedback = instance.params && instance.params.overallFeedback;
+  // Prefer options (Multi Choice / Single Choice convention); params is the same reference after merge.
+  appearance = (instance.options && instance.options.appearance) ||
+    (instance.params && instance.params.appearance);
+  overallFeedback = (instance.options && instance.options.overallFeedback) ||
+    (instance.params && instance.params.overallFeedback);
 
   if (instance.$playArea && instance.$playArea.length) {
     AppearanceModule.scheduleAppearance(instance.$playArea, appearance, overallFeedback);
@@ -429,7 +434,71 @@ export function collectFeedbackRanges(overallFeedback) {
 }
 
 /**
- * Normalize legacy l10n / overallFeedback shapes.
+ * Migrate legacy textColors (string or group) into textStyle with defaults.
+ * Font sizes are unitless numbers (1), never "1em".
+ *
+ * @param {object} appearance
+ */
+function migrateAppearanceTextStyle(appearance) {
+  var legacy;
+  var style;
+  var next;
+  var parseEmNumber;
+
+  if (!appearance || typeof appearance !== 'object') {
+    return;
+  }
+
+  parseEmNumber = function (value, fallback) {
+    var parsed;
+
+    if (value === undefined || value === null || value === '') {
+      return fallback;
+    }
+
+    if (typeof value === 'number' && !Number.isNaN(value)) {
+      return value;
+    }
+
+    parsed = parseFloat(String(value).replace(/em/gi, '').trim());
+    return Number.isNaN(parsed) ? fallback : parsed;
+  };
+
+  legacy = appearance.textColors;
+  style = appearance.textStyle;
+  next = (style && typeof style === 'object') ? { ...style } : {};
+
+  if (typeof legacy === 'string' && legacy !== '') {
+    if (!next.contextColor) {
+      next.contextColor = legacy;
+    }
+  }
+  else if (legacy && typeof legacy === 'object') {
+    if (next.paragraphFontSize === undefined || next.paragraphFontSize === null || next.paragraphFontSize === '') {
+      next.paragraphFontSize = legacy.paragraphFontSize;
+    }
+    if (!next.contextColor) {
+      next.contextColor = legacy.contextColor || legacy.context;
+    }
+    if (next.contextFontSize === undefined || next.contextFontSize === null || next.contextFontSize === '') {
+      next.contextFontSize = legacy.contextFontSize;
+    }
+  }
+
+  next.paragraphFontSize = parseEmNumber(next.paragraphFontSize, 1);
+  next.contextFontSize = parseEmNumber(next.contextFontSize, 1);
+  next.contextColor = (next.contextColor && String(next.contextColor).trim()) || '#555555';
+
+  if (Object.prototype.hasOwnProperty.call(next, 'context')) {
+    delete next.context;
+  }
+
+  appearance.textStyle = next;
+  delete appearance.textColors;
+}
+
+/**
+ * Normalize legacy l10n / overallFeedback / text appearance shapes.
  * @param {object} params
  */
 export function normalizeCfrdParams(params) {
@@ -464,5 +533,9 @@ export function normalizeCfrdParams(params) {
       text: params.taskDescription,
       displayMode: 'both',
     };
+  }
+
+  if (params.appearance) {
+    migrateAppearanceTextStyle(params.appearance);
   }
 }

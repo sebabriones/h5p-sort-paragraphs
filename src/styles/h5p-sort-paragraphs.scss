@@ -13,6 +13,8 @@
   --sp-paragraph-hover-border-color: transparent;
   --sp-paragraph-border-radius: 0.37em;
   --sp-context-color: #555555;
+  --sp-paragraph-font-size: 1em;
+  --sp-context-font-size: 1em;
   --sp-correct-bg: #b6e4ce;
   --sp-correct-border-color: #b6e4ce;
   --sp-correct-color: #255c41;
@@ -145,7 +147,7 @@
 
 .h5p-sp-play-area .h5p-sp-context-text {
   flex: 0 0 auto;
-  font-size: 1em;
+  font-size: var(--sp-context-font-size, 1em);
   line-height: 1.5;
   color: var(--sp-context-color);
 }
@@ -233,7 +235,7 @@
 
 .h5p-sp-play-area .h5p-sp-context-text :is(p, div, span, li, strong, em, code, pre, ul, ol),
 .h5p-sp-play-area .h5p-sort-paragraphs-paragraph-container :is(p, div, span, li, strong, em, code, pre, ul, ol) {
-  font-size: inherit !important;
+  font-size: inherit;
   line-height: inherit;
   color: inherit !important;
 }
@@ -255,7 +257,7 @@
 }
 
 .h5p-sp-play-area .h5p-sort-paragraphs-paragraph {
-  font-size: 1em;
+  font-size: var(--sp-paragraph-font-size, 1em);
   line-height: 1.5;
 }
 

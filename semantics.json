@@ -1749,14 +1749,26 @@
         ]
       },
       {
-        "name": "textColors",
+        "name": "textStyle",
         "type": "group",
         "label": "Text",
         "importance": "low",
         "optional": true,
+        "description": "Font sizes for paragraphs and context, and context text color. Sizes are unitless numbers in em (for example 1, not 1em).",
         "fields": [
           {
-            "name": "context",
+            "name": "paragraphFontSize",
+            "type": "number",
+            "label": "Paragraph font size",
+            "description": "Text size relative to the play area (em). Stored as a number (default 1).",
+            "default": 1,
+            "min": 0.5,
+            "max": 3,
+            "decimals": 2,
+            "unit": "em"
+          },
+          {
+            "name": "contextColor",
             "type": "text",
             "widget": "colorSelector",
             "label": "Context text color",
@@ -1765,6 +1777,17 @@
             "spectrum": {
               "showInput": true
             }
+          },
+          {
+            "name": "contextFontSize",
+            "type": "number",
+            "label": "Context font size",
+            "description": "Text size relative to the play area (em). Stored as a number (default 1).",
+            "default": 1,
+            "min": 0.5,
+            "max": 3,
+            "decimals": 2,
+            "unit": "em"
           }
         ]
       },

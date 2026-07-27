@@ -15,6 +15,8 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
     paragraphHoverBorderColor: 'transparent',
     paragraphBorderRadius: 0.37,
     contextText: '#555555',
+    paragraphFontSize: 1,
+    contextFontSize: 1,
     correctBackground: '#b6e4ce',
     correctBorderColor: '#b6e4ce',
     correctText: '#255c41',
@@ -81,7 +83,9 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
 
   var CSS_EM_VAR_KEYS = {
     paragraphBorderRadius: '--sp-paragraph-border-radius',
-    dropBorderWidth: '--sp-drop-border-width'
+    dropBorderWidth: '--sp-drop-border-width',
+    paragraphFontSize: '--sp-paragraph-font-size',
+    contextFontSize: '--sp-context-font-size'
   };
 
   var CSS_PX_VAR_KEYS = {
@@ -330,9 +334,67 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
    * @param {Object} [appearance]
    * @returns {Object}
    */
+  /**
+   * Normalize a font-size field to a unitless number (never "1em").
+   *
+   * @param {*} value
+   * @param {number} fallback
+   * @returns {number}
+   */
+  function normalizeEmNumber(value, fallback) {
+    var parsed;
+
+    if (value === undefined || value === null || value === '') {
+      return fallback;
+    }
+
+    if (typeof value === 'number' && !isNaN(value)) {
+      return value;
+    }
+
+    parsed = parseFloat(String(value).replace(/em/gi, '').trim());
+    return isNaN(parsed) ? fallback : parsed;
+  }
+
+  /**
+   * Resolve textStyle group from current or legacy textColors shapes.
+   *
+   * @param {Object} [appearance]
+   * @returns {{paragraphFontSize: number, contextColor: string, contextFontSize: number}}
+   */
+  function resolveTextStyle(appearance) {
+    var style = appearance && appearance.textStyle;
+    var legacy = appearance && appearance.textColors;
+    var out = {};
+
+    if (style && typeof style === 'object') {
+      out.paragraphFontSize = style.paragraphFontSize;
+      out.contextColor = style.contextColor || style.context;
+      out.contextFontSize = style.contextFontSize;
+    }
+    else if (typeof legacy === 'string') {
+      out.contextColor = legacy;
+    }
+    else if (legacy && typeof legacy === 'object') {
+      out.paragraphFontSize = legacy.paragraphFontSize;
+      out.contextColor = legacy.contextColor || legacy.context;
+      out.contextFontSize = legacy.contextFontSize;
+    }
+
+    out.paragraphFontSize = normalizeEmNumber(out.paragraphFontSize, APPEARANCE_DEFAULTS.paragraphFontSize);
+    out.contextFontSize = normalizeEmNumber(out.contextFontSize, APPEARANCE_DEFAULTS.contextFontSize);
+    out.contextColor = pickString(out.contextColor, APPEARANCE_DEFAULTS.contextText);
+
+    return out;
+  }
+
+  /**
+   * @param {Object} [appearance]
+   * @returns {Object}
+   */
   function readAppearanceFields(appearance) {
     var paragraphs = (appearance && appearance.paragraphColors) || {};
-    var text = (appearance && appearance.textColors) || {};
+    var text = resolveTextStyle(appearance);
     var correct = (appearance && appearance.correctColors) || {};
     var wrong = (appearance && appearance.wrongColors) || {};
     var interaction = (appearance && appearance.paragraphInteraction) || {};
@@ -388,7 +450,9 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
         '#999999'
       ),
       paragraphBorderRadius: paragraphs.borderRadius,
-      contextText: text.context,
+      contextText: text.contextColor,
+      paragraphFontSize: text.paragraphFontSize,
+      contextFontSize: text.contextFontSize,
       correctBackground: resolveFill(correct, {
         solidKey: 'background',
         fallbackSolid: APPEARANCE_DEFAULTS.correctBackground
