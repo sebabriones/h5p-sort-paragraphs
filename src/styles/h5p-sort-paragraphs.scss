@@ -455,7 +455,8 @@
     border-width: .25em;
     box-shadow: 0 0.1em 0 main.$color-box-shadow-regular;
     color: var(--sp-paragraph-color);
-    cursor: move;
+    cursor: -webkit-grab;
+    cursor: grab;
     display: flex;
     flex-direction: row;
     overflow-wrap: anywhere;
@@ -467,6 +468,13 @@
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     word-break: normal;
+
+    &:active:not(.h5p-sort-paragraphs-disabled),
+    &.h5p-sort-paragraphs-selected,
+    &.h5p-sort-paragraphs-ghosted {
+      cursor: -webkit-grabbing;
+      cursor: grabbing;
+    }
 
     &.animate-translation {
       cursor: auto;
