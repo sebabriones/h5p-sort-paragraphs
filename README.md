@@ -16,8 +16,10 @@ Fork CFRD de **H5P.SortParagraphs** (upstream 0.11.16, `coreApi` 1.23, Lumi).
 - **Contexto lateral** — bloque `context` (texto + imagen); `upgrades.js` migra `media` / `taskDescription` / `l10n` legacy
 - **Play area 16:9** — interacción escalable (`js/play-area-scale.js`); pie de evaluación fuera del play area
 - **Overall feedback en popup** — `H5P.QuestionCFRD.resolveOverallFeedback` + botón “Ver retroalimentación”
-- **Apariencia por actividad** — colores en `appearance` (`js/appearance.js`)
+- **Apariencia por actividad** — `paragraphColors` (normal/hover/active), `textStyle`, correcto/incorrecto, interacción al arrastrar (`dragTransparency`), botones de movimiento, acción y scrollbar (`js/appearance.js`)
 - **Contratos** — puntuación, `resetTask`, estado persistido, statements xAPI
+
+Catálogo de aspectos configurables (línea 1.0): [docs/cfrd-linea-10-aspectos-configurables.md](../../../docs/cfrd-linea-10-aspectos-configurables.md).
 
 Referencia de portación: `../h5p-sort-paragraphs-cfrd-1.1/` y `dev/multi-choice-cfrd/h5p-multi-choice-cfrd-1.0/`.
 
