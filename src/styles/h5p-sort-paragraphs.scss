@@ -11,6 +11,8 @@
   --sp-paragraph-hover-color: #333333;
   --sp-paragraph-border-color: transparent;
   --sp-paragraph-hover-border-color: transparent;
+  --sp-paragraph-border-width: 0;
+  --sp-paragraph-hover-border-width: 0;
   --sp-paragraph-border-radius: 0.37em;
   --sp-context-color: #555555;
   --sp-paragraph-font-size: 1em;
@@ -28,6 +30,7 @@
   --sp-active-bg: #e9edfe;
   --sp-active-color: #3d4eff;
   --sp-active-border-color: #0825ff;
+  --sp-active-border-width: 0.25em;
   --sp-active-box-shadow: #b1c5e0;
   --sp-move-btn-bg: #ffffff;
   --sp-move-btn-color: #1a73d9;
@@ -452,7 +455,7 @@
     border-color: var(--sp-paragraph-border-color);
     border-radius: var(--sp-paragraph-border-radius);
     border-style: solid;
-    border-width: .25em;
+    border-width: var(--sp-paragraph-border-width, 0);
     box-shadow: 0 0.1em 0 main.$color-box-shadow-regular;
     color: var(--sp-paragraph-color);
     cursor: -webkit-grab;
@@ -500,6 +503,7 @@
     &:not(.h5p-sort-paragraphs-disabled):not(.h5p-sort-paragraphs-correct):not(.h5p-sort-paragraphs-wrong):hover {
       background: var(--sp-paragraph-hover-bg);
       border-color: var(--sp-paragraph-hover-border-color);
+      border-width: var(--sp-paragraph-hover-border-width, var(--sp-paragraph-border-width, 0));
       color: var(--sp-paragraph-hover-color);
     }
 
@@ -507,7 +511,7 @@
       background: var(--sp-active-bg);
       border-color: var(--sp-active-border-color);
       border-style: solid;
-      border-width: var(--sp-drop-border-width);
+      border-width: var(--sp-active-border-width, 0.25em);
       box-shadow: 0 0.1em 0 var(--sp-active-box-shadow);
       color: var(--sp-active-color);
     }

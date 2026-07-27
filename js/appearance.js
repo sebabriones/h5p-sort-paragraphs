@@ -13,6 +13,8 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
     paragraphHoverText: '#333333',
     paragraphBorderColor: 'transparent',
     paragraphHoverBorderColor: 'transparent',
+    paragraphBorderWidth: 0,
+    paragraphHoverBorderWidth: 0,
     paragraphBorderRadius: 0.37,
     contextText: '#555555',
     paragraphFontSize: 1,
@@ -30,6 +32,7 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
     activeBackground: '#e9edfe',
     activeTextColor: '#3d4eff',
     activeBorderColor: '#0825ff',
+    activeBorderWidth: 0.25,
     activeBoxShadow: '#b1c5e0',
     moveButtonBackground: '#ffffff',
     moveButtonText: '#1a73d9',
@@ -83,6 +86,9 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
 
   var CSS_EM_VAR_KEYS = {
     paragraphBorderRadius: '--sp-paragraph-border-radius',
+    paragraphBorderWidth: '--sp-paragraph-border-width',
+    paragraphHoverBorderWidth: '--sp-paragraph-hover-border-width',
+    activeBorderWidth: '--sp-active-border-width',
     dropBorderWidth: '--sp-drop-border-width',
     paragraphFontSize: '--sp-paragraph-font-size',
     contextFontSize: '--sp-context-font-size'
@@ -271,6 +277,44 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
   }
 
   /**
+   * Whether a paragraph state should draw a border.
+   * H5P often omits boolean false while still storing borderColor defaults —
+   * never treat a present borderColor alone as "use border".
+   *
+   * @param {Object|null} state
+   * @param {*} legacyBorderColor
+   * @param {boolean} defaultUseBorder
+   * @returns {boolean}
+   */
+  function resolveUseBorder(state, legacyBorderColor, defaultUseBorder) {
+    var hasExplicitUseBorder = state && (
+      state.useBorder === true || state.useBorder === false ||
+      state.useBorder === 0 || state.useBorder === 1 ||
+      state.useBorder === '0' || state.useBorder === '1' ||
+      state.useBorder === 'true' || state.useBorder === 'false'
+    );
+    var nestedBorderUnset = !state ||
+      (state.useBorder === undefined && state.borderColor === undefined);
+
+    if (hasExplicitUseBorder) {
+      return isTruthy(state.useBorder);
+    }
+
+    if (
+      nestedBorderUnset &&
+      legacyBorderColor !== undefined &&
+      legacyBorderColor !== null &&
+      legacyBorderColor !== ''
+    ) {
+      return !isInvisibleColor(legacyBorderColor);
+    }
+
+    return defaultUseBorder;
+  }
+
+  /**
+   * Resolve border color for a paragraph state.
+   *
    * @param {Object|null} state
    * @param {*} legacyBorderColor
    * @param {boolean} defaultUseBorder
@@ -278,27 +322,18 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
    * @returns {string}
    */
   function resolveStateBorderColor(state, legacyBorderColor, defaultUseBorder, fallbackHex) {
-    var useBorder;
-    var color;
+    var useBorder = resolveUseBorder(state, legacyBorderColor, defaultUseBorder);
+    var color = state && state.borderColor;
+    var nestedBorderUnset = !state ||
+      (state.useBorder === undefined && state.borderColor === undefined);
 
-    if (state && (state.useBorder === true || state.useBorder === false ||
-        state.useBorder === 0 || state.useBorder === 1 ||
-        state.useBorder === '0' || state.useBorder === '1' ||
-        state.useBorder === 'true' || state.useBorder === 'false')) {
-      useBorder = isTruthy(state.useBorder);
-      color = state.borderColor;
-    }
-    else if (state && !isInvisibleColor(state.borderColor)) {
-      useBorder = true;
-      color = state.borderColor;
-    }
-    else if (legacyBorderColor !== undefined && legacyBorderColor !== null && legacyBorderColor !== '') {
-      useBorder = !isInvisibleColor(legacyBorderColor);
+    if (
+      nestedBorderUnset &&
+      legacyBorderColor !== undefined &&
+      legacyBorderColor !== null &&
+      legacyBorderColor !== ''
+    ) {
       color = legacyBorderColor;
-    }
-    else {
-      useBorder = defaultUseBorder;
-      color = state && state.borderColor;
     }
 
     if (!useBorder) {
@@ -306,10 +341,25 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
     }
 
     if (isInvisibleColor(color)) {
+      if (!isInvisibleColor(legacyBorderColor)) {
+        return pickString(legacyBorderColor, fallbackHex);
+      }
+
       return fallbackHex;
     }
 
     return pickString(color, fallbackHex);
+  }
+
+  /**
+   * Border width in em: 0 when disabled (avoids gradient + transparent border halo).
+   *
+   * @param {boolean} useBorder
+   * @param {number} [enabledWidth]
+   * @returns {number}
+   */
+  function resolveStateBorderWidth(useBorder, enabledWidth) {
+    return useBorder ? (enabledWidth !== undefined ? enabledWidth : 0.25) : 0;
   }
 
   /**
@@ -449,6 +499,12 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
         false,
         '#999999'
       ),
+      paragraphBorderWidth: resolveStateBorderWidth(
+        resolveUseBorder(normal, paragraphs.borderColor, false)
+      ),
+      paragraphHoverBorderWidth: resolveStateBorderWidth(
+        resolveUseBorder(hover, paragraphs.hoverBorderColor, false)
+      ),
       paragraphBorderRadius: paragraphs.borderRadius,
       contextText: text.contextColor,
       paragraphFontSize: text.paragraphFontSize,
@@ -485,6 +541,13 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
         pickString(paragraphs.activeBorderColor, interaction.activeBorderColor),
         true,
         APPEARANCE_DEFAULTS.activeBorderColor
+      ),
+      activeBorderWidth: resolveStateBorderWidth(
+        resolveUseBorder(
+          active,
+          pickString(paragraphs.activeBorderColor, interaction.activeBorderColor),
+          true
+        )
       ),
       moveButtonBackground: movementButtons.background,
       moveButtonText: movementButtons.text,
