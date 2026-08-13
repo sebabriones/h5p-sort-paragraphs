@@ -203,10 +203,15 @@ function SortParagraphsCFRD(params, contentId, extras) {
       width: '100%',
       maxWidth: '100%',
       height: '',
-      maxHeight: maxHeightCss || 'none',
+      maxHeight: 'none',
       fontSize: fontSize,
       '--sp-scale': scaleKey,
     });
+
+    const $root = self.$playArea.parent();
+    if ($root && $root.length) {
+      $root.css('maxHeight', maxHeightCss || 'none');
+    }
 
     self.$playArea
       .find('.h5p-sp-context-text, .h5p-sort-paragraphs-content')
@@ -280,6 +285,7 @@ function SortParagraphsCFRD(params, contentId, extras) {
     clearPlayAreaScaleCache();
     if (self.$playArea && self.$playArea.length) {
       self.$playArea.css('maxHeight', 'none');
+      self.$playArea.parent().css('maxHeight', 'none');
     }
     self.trigger('resize');
   });

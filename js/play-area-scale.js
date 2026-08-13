@@ -5,8 +5,9 @@ H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
 /**
  * Play area 16:9 — scale contract aligned with Multi Choice CFRD 1.0
  * (640×360 design size, fluid width, proportional fontSize).
- * Height capping (footer reserve) applies only in fullscreen to avoid
- * fighting h5p-standalone iframe auto-height in normal view.
+ * Height capping applies only in fullscreen to avoid fighting
+ * h5p-standalone iframe auto-height in normal view. The evaluation
+ * footer lives inside the 16:9 root, so the cap is the viewport.
  */
 H5P.SortParagraphsCFRD.PlayArea = (function () {
   var BASE_WIDTH = 640;
@@ -191,8 +192,9 @@ H5P.SortParagraphsCFRD.PlayArea = (function () {
   }
 
   /**
-   * Max height the 16:9 play area may use without covering the footer.
-   * Only in fullscreen — returns 0 otherwise (no cap; avoids iframe auto-height loops).
+   * Max height the 16:9 root may use in fullscreen.
+   * Footer is inside the root, so the cap is the viewport (no extra reserve).
+   * Returns 0 otherwise (no cap; avoids iframe auto-height loops).
    *
    * @param {HTMLElement} playAreaElement
    * @param {number} width Measured width in px
@@ -208,17 +210,12 @@ H5P.SortParagraphsCFRD.PlayArea = (function () {
       return 0;
     }
 
-    var available = viewportHeight - getFooterReserve(playAreaElement);
-    if (available <= 0) {
-      return 0;
-    }
-
     var naturalHeight = width / ASPECT_RATIO;
-    if (naturalHeight <= available) {
+    if (naturalHeight <= viewportHeight) {
       return 0;
     }
 
-    return available;
+    return viewportHeight;
   }
 
   return {
