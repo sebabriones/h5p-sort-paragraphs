@@ -160,7 +160,7 @@ function SortParagraphsCFRD(params, contentId, extras) {
 
   const clearPlayAreaScaleCache = function () {
     self._spLastScaleKey = null;
-    self._spLastMaxHeight = null;
+    self._spLastHeightPx = null;
     self._spLastWidth = null;
   };
 
@@ -172,32 +172,33 @@ function SortParagraphsCFRD(params, contentId, extras) {
       return;
     }
 
-    const playAreaEl = self.$playArea[0];
-    let width = playAreaApi.getMeasureWidth(playAreaEl);
-
-    if (!width || width <= 0) {
-      width = design.baseWidth;
-    }
-
-    // Height cap only in fullscreen — normal view must not fight iframe auto-height.
-    const maxHeightPx = playAreaApi.getPlayAreaMaxHeight(playAreaEl, width);
-    const heightForScale = maxHeightPx > 0 ? maxHeightPx : 0;
-    const scale = playAreaApi.getScale(width, heightForScale);
-    const fontSize = playAreaApi.getScaledFontSize(width, heightForScale) + 'px';
-    const scaleKey = scale.toFixed(4);
-    const maxHeightCss = maxHeightPx > 0 ? (Math.round(maxHeightPx) + 'px') : '';
+    const rootEl = (self.$container && self.$container.length) ?
+      self.$container[0] :
+      self.$playArea[0];
+    const layout = playAreaApi.getLayoutDimensions(rootEl);
+    const scaleKey = layout.scale.toFixed(4);
+    const fontSize = layout.fontSize + 'px';
 
     if (
       self._spLastScaleKey === scaleKey &&
-      self._spLastMaxHeight === maxHeightCss &&
-      self._spLastWidth === width
+      self._spLastHeightPx === layout.heightPx &&
+      self._spLastWidth === layout.width
     ) {
       return;
     }
 
     self._spLastScaleKey = scaleKey;
-    self._spLastMaxHeight = maxHeightCss;
-    self._spLastWidth = width;
+    self._spLastHeightPx = layout.heightPx;
+    self._spLastWidth = layout.width;
+
+    if (self.$container && self.$container.length) {
+      self.$container.css({
+        width: layout.widthPx,
+        maxWidth: '100%',
+        height: layout.heightPx,
+        maxHeight: 'none',
+      });
+    }
 
     self.$playArea.css({
       width: '100%',
@@ -207,11 +208,6 @@ function SortParagraphsCFRD(params, contentId, extras) {
       fontSize: fontSize,
       '--sp-scale': scaleKey,
     });
-
-    const $root = self.$playArea.parent();
-    if ($root && $root.length) {
-      $root.css('maxHeight', maxHeightCss || 'none');
-    }
 
     self.$playArea
       .find('.h5p-sp-context-text, .h5p-sort-paragraphs-content')

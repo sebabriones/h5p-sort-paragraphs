@@ -3,11 +3,8 @@ var H5P = H5P || {};
 H5P.SortParagraphsCFRD = H5P.SortParagraphsCFRD || {};
 
 /**
- * Play area 16:9 — scale contract aligned with Multi Choice CFRD 1.0
- * (640×360 design size, fluid width, proportional fontSize).
- * Height capping applies only in fullscreen to avoid fighting
- * h5p-standalone iframe auto-height in normal view. The evaluation
- * footer lives inside the 16:9 root, so the cap is the viewport.
+ * Play area 16:9 — Course Presentation style: explicit height in px, fluid width,
+ * proportional fontSize. Height cap applies only in fullscreen.
  */
 H5P.SortParagraphsCFRD.PlayArea = (function () {
   var BASE_WIDTH = 640;
@@ -16,14 +13,7 @@ H5P.SortParagraphsCFRD.PlayArea = (function () {
   var BASE_FONT_SIZE = 16;
   var MIN_SCALE = 0.35;
   var MAX_SCALE = 1;
-  /** Space for action buttons + margins below the play area */
-  var FOOTER_RESERVE_PX = 96;
-  /** Extra when inline scorebar is visible */
-  var SCOREBAR_RESERVE_PX = 64;
 
-  /**
-   * @returns {{width: number, height: number, ratio: number, baseWidth: number, baseHeight: number, baseFontSize: number}}
-   */
   function getDesignSize() {
     return {
       width: BASE_WIDTH,
@@ -35,11 +25,6 @@ H5P.SortParagraphsCFRD.PlayArea = (function () {
     };
   }
 
-  /**
-   * @param {number} width Container width in px
-   * @param {number} [height] Available play-area height in px (omit / 0 = width only)
-   * @returns {number}
-   */
   function getScale(width, height) {
     var scaleW = (!width || width <= 0) ? 1 : width / BASE_WIDTH;
     var scaleH = (!height || height <= 0) ? Number.POSITIVE_INFINITY : height / BASE_HEIGHT;
@@ -48,22 +33,31 @@ H5P.SortParagraphsCFRD.PlayArea = (function () {
     return Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale));
   }
 
-  /**
-   * @param {number} width Container width in px
-   * @param {number} [height] Available play-area height in px
-   * @returns {number}
-   */
   function getScaledFontSize(width, height) {
     return BASE_FONT_SIZE * getScale(width, height);
   }
 
   /**
-   * Measure play area width from parent / iframe.
-   * Forces reflow so live viewport resizes are read correctly inside H5P iframes.
+   * Explicit 16:9 height in px (avoids CSS aspect-ratio scrollHeight drift in LTI).
    *
-   * @param {HTMLElement} playAreaElement
+   * @param {number} width
+   * @param {number} [maxHeightPx]
    * @returns {number}
    */
+  function getExplicitHeight(width, maxHeightPx) {
+    if (!width || width <= 0) {
+      return BASE_HEIGHT;
+    }
+
+    var height = width / ASPECT_RATIO;
+
+    if (maxHeightPx > 0 && height > maxHeightPx) {
+      return Math.round(maxHeightPx);
+    }
+
+    return Math.round(height);
+  }
+
   function getMeasureWidth(playAreaElement) {
     if (!playAreaElement) {
       return 0;
@@ -99,12 +93,6 @@ H5P.SortParagraphsCFRD.PlayArea = (function () {
     return playAreaElement.clientWidth;
   }
 
-  /**
-   * Viewport / iframe height available to the content (not content-driven height).
-   *
-   * @param {HTMLElement} playAreaElement
-   * @returns {number}
-   */
   function getMeasureViewportHeight(playAreaElement) {
     var frame = window.frameElement;
     var frameHeight = 0;
@@ -126,12 +114,6 @@ H5P.SortParagraphsCFRD.PlayArea = (function () {
     return viewHeight;
   }
 
-  /**
-   * True when H5P / browser fullscreen is active (class or Fullscreen API).
-   *
-   * @param {HTMLElement} [playAreaElement]
-   * @returns {boolean}
-   */
   function isFullscreenContext(playAreaElement) {
     if (document.fullscreenElement ||
         document.webkitFullscreenElement ||
@@ -170,36 +152,6 @@ H5P.SortParagraphsCFRD.PlayArea = (function () {
     return false;
   }
 
-  /**
-   * Fixed reserve for evaluation footer (avoids measuring during scale).
-   *
-   * @param {HTMLElement} playAreaElement
-   * @returns {number}
-   */
-  function getFooterReserve(playAreaElement) {
-    var reserve = FOOTER_RESERVE_PX;
-    var parent = playAreaElement && playAreaElement.parentElement;
-
-    if (!parent) {
-      return reserve;
-    }
-
-    if (parent.querySelector(':scope > .h5p-question-scorebar.h5p-question-visible')) {
-      reserve += SCOREBAR_RESERVE_PX;
-    }
-
-    return reserve;
-  }
-
-  /**
-   * Max height the 16:9 root may use in fullscreen.
-   * Footer is inside the root, so the cap is the viewport (no extra reserve).
-   * Returns 0 otherwise (no cap; avoids iframe auto-height loops).
-   *
-   * @param {HTMLElement} playAreaElement
-   * @param {number} width Measured width in px
-   * @returns {number}
-   */
   function getPlayAreaMaxHeight(playAreaElement, width) {
     if (!width || width <= 0 || !isFullscreenContext(playAreaElement)) {
       return 0;
@@ -218,6 +170,44 @@ H5P.SortParagraphsCFRD.PlayArea = (function () {
     return viewportHeight;
   }
 
+  /**
+   * CP-style layout dimensions for the 16:9 root element.
+   *
+   * @param {HTMLElement} rootElement
+   * @returns {{width: number, height: number, scale: number, fontSize: number, maxHeightPx: number, heightPx: string, widthPx: string}}
+   */
+  function getLayoutDimensions(rootElement) {
+    var width = getMeasureWidth(rootElement);
+    var layoutWidth;
+
+    if (!width || width <= 0) {
+      width = BASE_WIDTH;
+    }
+
+    var maxHeightPx = getPlayAreaMaxHeight(rootElement, width);
+    layoutWidth = width;
+
+    if (maxHeightPx > 0 && layoutWidth / maxHeightPx > ASPECT_RATIO) {
+      layoutWidth = maxHeightPx * ASPECT_RATIO;
+    }
+
+    var height = getExplicitHeight(layoutWidth, maxHeightPx);
+    var heightForScale = maxHeightPx > 0 ? maxHeightPx : 0;
+    var scale = getScale(layoutWidth, heightForScale);
+
+    return {
+      width: layoutWidth,
+      height: height,
+      scale: scale,
+      fontSize: getScaledFontSize(layoutWidth, heightForScale),
+      maxHeightPx: maxHeightPx,
+      heightPx: height + 'px',
+      widthPx: (maxHeightPx > 0 && layoutWidth < width) ?
+        (Math.round(layoutWidth) + 'px') :
+        '100%'
+    };
+  }
+
   return {
     BASE_WIDTH: BASE_WIDTH,
     BASE_HEIGHT: BASE_HEIGHT,
@@ -225,15 +215,14 @@ H5P.SortParagraphsCFRD.PlayArea = (function () {
     BASE_FONT_SIZE: BASE_FONT_SIZE,
     MIN_SCALE: MIN_SCALE,
     MAX_SCALE: MAX_SCALE,
-    FOOTER_RESERVE_PX: FOOTER_RESERVE_PX,
-    SCOREBAR_RESERVE_PX: SCOREBAR_RESERVE_PX,
     getDesignSize: getDesignSize,
     getScale: getScale,
     getScaledFontSize: getScaledFontSize,
+    getExplicitHeight: getExplicitHeight,
     getMeasureWidth: getMeasureWidth,
     getMeasureViewportHeight: getMeasureViewportHeight,
     isFullscreenContext: isFullscreenContext,
-    getFooterReserve: getFooterReserve,
-    getPlayAreaMaxHeight: getPlayAreaMaxHeight
+    getPlayAreaMaxHeight: getPlayAreaMaxHeight,
+    getLayoutDimensions: getLayoutDimensions
   };
 })();
