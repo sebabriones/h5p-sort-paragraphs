@@ -532,6 +532,12 @@ SortParagraphsCFRD.prototype.resetTask = function () {
   this.previousState = {};
   this.setViewState('task');
   this.trigger('resize');
+
+  // Nuevo intento: sin delete, setActivityStarted es no-op.
+  delete this.activityStartTime;
+  if (typeof this.setActivityStarted === 'function') {
+    this.setActivityStarted();
+  }
 };
 
 SortParagraphsCFRD.prototype.getXAPIData = function () {
