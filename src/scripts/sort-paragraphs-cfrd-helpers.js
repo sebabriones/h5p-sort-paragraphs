@@ -45,10 +45,25 @@ export function getInstructionsOptions(instance) {
 }
 
 /**
+ * Embedded instances (Course Presentation, Interactive Video) delegate
+ * instructions to the host, which sizes them for the whole activity.
+ *
+ * @param {object} instance
+ * @returns {boolean}
+ */
+export function isEmbeddedInstance(instance) {
+  return !!(instance && typeof instance.isRoot === 'function' && !instance.isRoot());
+}
+
+/**
  * @param {object} instance
  * @param {H5P.jQuery} $fallbackContainer
  */
 export function scheduleInstructionsAttach(instance, $fallbackContainer) {
+  if (isEmbeddedInstance(instance)) {
+    return;
+  }
+
   [0, 200, 500].forEach((delay) => {
     setTimeout(() => {
       const instructions = getInstructionsOptions(instance);
